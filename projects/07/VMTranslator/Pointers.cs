@@ -11,6 +11,7 @@
             Addresses.Add("this", "THIS");
             Addresses.Add("that", "THAT");
             Addresses.Add("constant", "SP");
+            Addresses.Add("temp", "TEMP");
         }
     }
 }

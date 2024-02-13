@@ -2,7 +2,7 @@
 using VMTranslator.Strategies;
 using VMTranslator.Strategies.Contract;
 
-string[] lines = File.ReadAllLines(@"D:\Arquitetura de Computadores I\NandToTetris\projects\07\StackArithmetic\StackTest\StackTest.vm", Encoding.UTF8);
+string[] lines = File.ReadAllLines(@"D:\Arquitetura de Computadores I\NandToTetris\projects\07\MemoryAccess\BasicTest\BasicTest.vm", Encoding.UTF8);
 var selector = new Selector();
 
 var translated = new StringBuilder();

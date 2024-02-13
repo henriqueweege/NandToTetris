@@ -8,17 +8,18 @@ namespace VMTranslator.Strategies
 {
     public static class Utils
     {
+
         public static string RetrieveLastTwoStackValues()
         {
-            return @"  
+            return @$"  
                     //retrieve first value
                     @SP
-                    M = M - 1
+                    {DecrementStackPointer()}
                     A=M
                     D=M
                     //retrieve second value
                     @SP
-                    M = M - 1
+                    {DecrementStackPointer()}
                     A=M";
         }
 
@@ -26,7 +27,7 @@ namespace VMTranslator.Strategies
         {
             return @"
                     //calculate dif
-                    D = D - M";
+                    D = M - D";
         }
 
         public static string ResultIsFalse()
@@ -44,11 +45,12 @@ namespace VMTranslator.Strategies
         {
             return @"
                     //Result is true 
-                    @1
-                    D=A
+                    @0
+                    D = A
+                    D = D -1 
                     @SP
-                    A=M
-                    M=D";
+                    A = M
+                    M = D";
         }
 
         public static string IncrementStackPointer()
@@ -57,6 +59,19 @@ namespace VMTranslator.Strategies
                     //increment pointer
                     @SP
                     M = M + 1";
+        }
+        public static string DecrementStackPointer()
+        {
+            return @"
+                    //Decrement pointer
+                    @SP
+                    M = M - 1";
+        }
+        public static string GetIndexNumber(string index)
+        {
+            return $@"
+                    @{index}
+                    D=M";
         }
     }
 }

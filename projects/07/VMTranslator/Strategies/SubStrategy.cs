@@ -7,14 +7,9 @@ namespace VMTranslator.Strategies
         public string Translate(string pointerName, string position)
         {
             return @$"
-                    @SP
-                    A=M
-                    D=M
-                    @SP
-                    M = M -1
-                    @SP
-                    A=M
-                    D= M - D";
+                    {Utils.RetrieveLastTwoStackValues()}
+                    M = M - D
+                    {Utils.IncrementStackPointer()}";
 
         }
     }

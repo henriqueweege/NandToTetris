@@ -14,11 +14,10 @@ namespace VMTranslator.Strategies
 
             return $@"
                     @SP
-                    M = M - 1
+                    {Utils.DecrementStackPointer()}
                     A=M
                     M=!M
-                    @SP
-                    M = M + 1";
+                    {Utils.IncrementStackPointer()}";
 
         }
     }

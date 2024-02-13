@@ -8,16 +8,9 @@ namespace VMTranslator.Strategies
         {
 
             return $@"
-                    @SP
-                    A=M
-                    D=M
-                    @SP
-                    M = M - 1
-                    @SP
-                    A=M
-                    M= D|M
-                    @SP
-                    M = M + 1";
+                    {Utils.RetrieveLastTwoStackValues()}
+                    M = D|M
+                    {Utils.IncrementStackPointer()}";
 
         }
     }

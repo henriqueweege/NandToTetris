@@ -9,14 +9,11 @@ namespace VMTranslator.Strategies
             var pointer = Pointers.Addresses[pointerName];
 
             return @$"
-                    @SP
-                    A=M
-                    D=M
+                    {Utils.GetIndexNumber(index)}
                     @{pointer}
-                    A=M+{index}
+                    A=M+D
                     M=D
-                    @SP
-                    M=M-1";
+                    {Utils.DecrementStackPointer()}";
 
         }
     }

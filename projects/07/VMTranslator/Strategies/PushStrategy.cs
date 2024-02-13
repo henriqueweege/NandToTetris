@@ -15,14 +15,14 @@ namespace VMTranslator.Strategies
             var pointer = Pointers.Addresses[pointerName];
 
             return @$"
+                     {Utils.GetIndexNumber(index)}
                      @{pointer}
-                     A = M + {index}
+                     A = M + D
                      D = M
                      @SP
                      A = M
                      M = D
-                     @SP
-                     M = M + 1";
+                     {Utils.IncrementStackPointer()}";
 
         }
 
@@ -34,8 +34,7 @@ namespace VMTranslator.Strategies
                         @SP
                         A = M
                         M = D
-                        @SP
-                        M = M + 1";
+                        {Utils.IncrementStackPointer()}";
         }
     }
 }
