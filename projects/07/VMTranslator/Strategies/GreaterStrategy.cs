@@ -9,26 +9,19 @@ namespace VMTranslator.Strategies
         {
             Greaters++;
             return $@"
-                    @SP
-                    A=M
-                    D=M
-                    @SP
-                    M = M - 1
-                    @SP
-                    A=M
-                    D= D - M
-                    M=-1
+                    {Utils.RetrieveLastTwoStackValues()}
+                    {Utils.CalculateDifference()}
                     @GREATERTHAN{Greaters}
                     D;JGT
+                    {Utils.ResultIsFalse()}
                     @ENDGREATERTHAN{Greaters}
                     0;JMP
                     (GREATERTHAN{Greaters})
-                    @SP
-                    A=M
-                    M=1
+                    {Utils.ResultIsTrue()}
                     @ENDGREATERTHAN{Greaters}
                     0;JMP
                     (ENDGREATERTHAN{Greaters})
+                    {Utils.IncrementStackPointer()} 
                    ";
 
         }

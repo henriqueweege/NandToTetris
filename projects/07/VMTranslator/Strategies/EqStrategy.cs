@@ -15,39 +15,19 @@ namespace VMTranslator.Strategies
             Equals++;
 
             return $@"
-                    //retrieve first value
-                    @SP
-                    M = M - 1
-                    A=M
-                    D=M
-                    //retrieve second value
-                    @SP
-                    M = M - 1
-                    A=M
-                    //calculate dif
-                    D= D - M
+                    {Utils.RetrieveLastTwoStackValues()}
+                    {Utils.CalculateDifference()}
                     @EQUAL{Equals}
                     D;JEQ
-                    //result is false
-                    @0
-                    D=A
-                    @SP
-                    A=M
-                    M=D
+                    {Utils.ResultIsFalse()}
                     @ENDEQUAL{Equals}
                     0;JMP
                     (EQUAL{Equals})
-                    //Result is true 
-                    @1
-                    D=A
-                    @SP
-                    A=M
-                    M=D
+                    {Utils.ResultIsTrue()}
                     @ENDEQUAL{Equals}
                     0;JMP
                     (ENDEQUAL{Equals})
-                    @SP
-                    M = M + 1";
+                    {Utils.IncrementStackPointer()} ";
 
         }
     }

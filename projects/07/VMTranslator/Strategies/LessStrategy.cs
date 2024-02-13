@@ -15,28 +15,19 @@ namespace VMTranslator.Strategies
             Lesses++;
 
             return $@"
-                    @SP
-                    A=M
-                    D=M
-                    @SP
-                    M = M - 1
-                    @SP
-                    A=M
-                    D= D - M
-                    M=-1
+                    {Utils.RetrieveLastTwoStackValues()}
+                    {Utils.CalculateDifference()}
                     @LESSTHAN{Lesses}
                     D;JLT
+                    {Utils.ResultIsFalse()}
                     @ENDLESSTHAN{Lesses}
                     0;JMP
-                    
                     (LESSTHAN{Lesses})
-                    @SP
-                    A=M
-                    M=1
+                    {Utils.ResultIsTrue()}
                     @ENDLESSTHAN{Lesses}
                     0;JMP
                     (ENDLESSTHAN{Lesses})
-                    ";
+                    {Utils.IncrementStackPointer()}";
 
         }
     }

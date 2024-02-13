@@ -18,6 +18,7 @@
                         M = M + 1
 // eq
 
+                      
                     //retrieve first value
                     @SP
                     M = M - 1
@@ -27,10 +28,12 @@
                     @SP
                     M = M - 1
                     A=M
+                    
                     //calculate dif
-                    D= D - M
+                    D = D - M
                     @EQUAL1
                     D;JEQ
+                    
                     //result is false
                     @0
                     D=A
@@ -40,6 +43,7 @@
                     @ENDEQUAL1
                     0;JMP
                     (EQUAL1)
+                    
                     //Result is true 
                     @1
                     D=A
@@ -49,8 +53,10 @@
                     @ENDEQUAL1
                     0;JMP
                     (ENDEQUAL1)
+                    
+                    //increment pointer
                     @SP
-                    M = M + 1
+                    M = M + 1 
 // push constant 17
 
                         @17
@@ -71,6 +77,7 @@
                         M = M + 1
 // eq
 
+                      
                     //retrieve first value
                     @SP
                     M = M - 1
@@ -80,10 +87,12 @@
                     @SP
                     M = M - 1
                     A=M
+                    
                     //calculate dif
-                    D= D - M
+                    D = D - M
                     @EQUAL2
                     D;JEQ
+                    
                     //result is false
                     @0
                     D=A
@@ -93,6 +102,7 @@
                     @ENDEQUAL2
                     0;JMP
                     (EQUAL2)
+                    
                     //Result is true 
                     @1
                     D=A
@@ -102,8 +112,10 @@
                     @ENDEQUAL2
                     0;JMP
                     (ENDEQUAL2)
+                    
+                    //increment pointer
                     @SP
-                    M = M + 1
+                    M = M + 1 
 // push constant 16
 
                         @16
@@ -124,6 +136,7 @@
                         M = M + 1
 // eq
 
+                      
                     //retrieve first value
                     @SP
                     M = M - 1
@@ -133,10 +146,12 @@
                     @SP
                     M = M - 1
                     A=M
+                    
                     //calculate dif
-                    D= D - M
+                    D = D - M
                     @EQUAL3
                     D;JEQ
+                    
                     //result is false
                     @0
                     D=A
@@ -146,6 +161,7 @@
                     @ENDEQUAL3
                     0;JMP
                     (EQUAL3)
+                    
                     //Result is true 
                     @1
                     D=A
@@ -155,8 +171,10 @@
                     @ENDEQUAL3
                     0;JMP
                     (ENDEQUAL3)
+                    
+                    //increment pointer
                     @SP
-                    M = M + 1
+                    M = M + 1 
 // push constant 892
 
                         @892
@@ -177,28 +195,45 @@
                         M = M + 1
 // lt
 
-                    @SP
-                    A=M
-                    D=M
+                      
+                    //retrieve first value
                     @SP
                     M = M - 1
-                    @SP
                     A=M
-                    D= D - M
-                    M=-1
+                    D=M
+                    //retrieve second value
+                    @SP
+                    M = M - 1
+                    A=M
+                    
+                    //calculate dif
+                    D = D - M
                     @LESSTHAN1
                     D;JLT
-                    @ENDLESSTHAN1
-                    0;JMP
                     
-                    (LESSTHAN1)
+                    //result is false
+                    @0
+                    D=A
                     @SP
                     A=M
-                    M=1
+                    M=D
+                    @ENDLESSTHAN1
+                    0;JMP
+                    (LESSTHAN1)
+                    
+                    //Result is true 
+                    @1
+                    D=A
+                    @SP
+                    A=M
+                    M=D
                     @ENDLESSTHAN1
                     0;JMP
                     (ENDLESSTHAN1)
                     
+                    //increment pointer
+                    @SP
+                    M = M + 1
 // push constant 891
 
                         @891
@@ -219,28 +254,45 @@
                         M = M + 1
 // lt
 
-                    @SP
-                    A=M
-                    D=M
+                      
+                    //retrieve first value
                     @SP
                     M = M - 1
-                    @SP
                     A=M
-                    D= D - M
-                    M=-1
+                    D=M
+                    //retrieve second value
+                    @SP
+                    M = M - 1
+                    A=M
+                    
+                    //calculate dif
+                    D = D - M
                     @LESSTHAN2
                     D;JLT
-                    @ENDLESSTHAN2
-                    0;JMP
                     
-                    (LESSTHAN2)
+                    //result is false
+                    @0
+                    D=A
                     @SP
                     A=M
-                    M=1
+                    M=D
+                    @ENDLESSTHAN2
+                    0;JMP
+                    (LESSTHAN2)
+                    
+                    //Result is true 
+                    @1
+                    D=A
+                    @SP
+                    A=M
+                    M=D
                     @ENDLESSTHAN2
                     0;JMP
                     (ENDLESSTHAN2)
                     
+                    //increment pointer
+                    @SP
+                    M = M + 1
 // push constant 891
 
                         @891
@@ -261,28 +313,45 @@
                         M = M + 1
 // lt
 
-                    @SP
-                    A=M
-                    D=M
+                      
+                    //retrieve first value
                     @SP
                     M = M - 1
-                    @SP
                     A=M
-                    D= D - M
-                    M=-1
+                    D=M
+                    //retrieve second value
+                    @SP
+                    M = M - 1
+                    A=M
+                    
+                    //calculate dif
+                    D = D - M
                     @LESSTHAN3
                     D;JLT
-                    @ENDLESSTHAN3
-                    0;JMP
                     
-                    (LESSTHAN3)
+                    //result is false
+                    @0
+                    D=A
                     @SP
                     A=M
-                    M=1
+                    M=D
+                    @ENDLESSTHAN3
+                    0;JMP
+                    (LESSTHAN3)
+                    
+                    //Result is true 
+                    @1
+                    D=A
+                    @SP
+                    A=M
+                    M=D
                     @ENDLESSTHAN3
                     0;JMP
                     (ENDLESSTHAN3)
                     
+                    //increment pointer
+                    @SP
+                    M = M + 1
 // push constant 32767
 
                         @32767
@@ -303,26 +372,45 @@
                         M = M + 1
 // gt
 
-                    @SP
-                    A=M
-                    D=M
+                      
+                    //retrieve first value
                     @SP
                     M = M - 1
-                    @SP
                     A=M
-                    D= D - M
-                    M=-1
+                    D=M
+                    //retrieve second value
+                    @SP
+                    M = M - 1
+                    A=M
+                    
+                    //calculate dif
+                    D = D - M
                     @GREATERTHAN1
                     D;JGT
+                    
+                    //result is false
+                    @0
+                    D=A
+                    @SP
+                    A=M
+                    M=D
                     @ENDGREATERTHAN1
                     0;JMP
                     (GREATERTHAN1)
+                    
+                    //Result is true 
+                    @1
+                    D=A
                     @SP
                     A=M
-                    M=1
+                    M=D
                     @ENDGREATERTHAN1
                     0;JMP
                     (ENDGREATERTHAN1)
+                    
+                    //increment pointer
+                    @SP
+                    M = M + 1 
                    
 // push constant 32766
 
@@ -344,26 +432,45 @@
                         M = M + 1
 // gt
 
-                    @SP
-                    A=M
-                    D=M
+                      
+                    //retrieve first value
                     @SP
                     M = M - 1
-                    @SP
                     A=M
-                    D= D - M
-                    M=-1
+                    D=M
+                    //retrieve second value
+                    @SP
+                    M = M - 1
+                    A=M
+                    
+                    //calculate dif
+                    D = D - M
                     @GREATERTHAN2
                     D;JGT
+                    
+                    //result is false
+                    @0
+                    D=A
+                    @SP
+                    A=M
+                    M=D
                     @ENDGREATERTHAN2
                     0;JMP
                     (GREATERTHAN2)
+                    
+                    //Result is true 
+                    @1
+                    D=A
                     @SP
                     A=M
-                    M=1
+                    M=D
                     @ENDGREATERTHAN2
                     0;JMP
                     (ENDGREATERTHAN2)
+                    
+                    //increment pointer
+                    @SP
+                    M = M + 1 
                    
 // push constant 32766
 
@@ -385,26 +492,45 @@
                         M = M + 1
 // gt
 
-                    @SP
-                    A=M
-                    D=M
+                      
+                    //retrieve first value
                     @SP
                     M = M - 1
-                    @SP
                     A=M
-                    D= D - M
-                    M=-1
+                    D=M
+                    //retrieve second value
+                    @SP
+                    M = M - 1
+                    A=M
+                    
+                    //calculate dif
+                    D = D - M
                     @GREATERTHAN3
                     D;JGT
+                    
+                    //result is false
+                    @0
+                    D=A
+                    @SP
+                    A=M
+                    M=D
                     @ENDGREATERTHAN3
                     0;JMP
                     (GREATERTHAN3)
+                    
+                    //Result is true 
+                    @1
+                    D=A
                     @SP
                     A=M
-                    M=1
+                    M=D
                     @ENDGREATERTHAN3
                     0;JMP
                     (ENDGREATERTHAN3)
+                    
+                    //increment pointer
+                    @SP
+                    M = M + 1 
                    
 // push constant 57
 
