@@ -11,26 +11,12 @@
                     M = M + 1
 // pop pointer 0
 
-                    //get address
-                    
-                    @0
-                    D=A
-                    @THIS
-                    D=M+D
-                    //store address at R13
-                    @13
-                    M=D
-                    
-                    //retrieve first value
-                    
-                    //Decrement pointer
+                    //pop this
                     @SP
                     M = M - 1
                     A=M
                     D=M
-                    //put value at right address
-                    @R13
-                    A=M
+                    @THIS
                     M=D
 // push constant 3040
 
@@ -45,26 +31,12 @@
                     M = M + 1
 // pop pointer 1
 
-                    //get address
-                    
-                    @0
-                    D=A
-                    @THAT
-                    D=M+D
-                    //store address at R13
-                    @13
-                    M=D
-                    
-                    //retrieve first value
-                    
-                    //Decrement pointer
+                    //pop that
                     @SP
                     M = M - 1
                     A=M
                     D=M
-                    //put value at right address
-                    @R13
-                    A=M
+                    @THAT
                     M=D
 // push constant 32
 
@@ -136,35 +108,27 @@
                     M=D
 // push pointer 0
 
-                     
-                    @0
-                    D=A
-                     //Get value
-                     @THIS
-                     A = M + D
-                     D = M
-                     //put value in stack
-                     @SP
-                     A = M
-                     M = D
-                     
+                    //Get THIS value
+                    @THIS
+                    D=M
+                    //Push THIS value
+                    @SP
+                    A=M
+                    M=D
+                    
                     //increment pointer
                     @SP
                     M = M + 1
 // push pointer 1
 
-                     
-                    @0
-                    D=A
-                     //Get value
-                     @THAT
-                     A = M + D
-                     D = M
-                     //put value in stack
-                     @SP
-                     A = M
-                     M = D
-                     
+                    //Get THAT value
+                    @THAT
+                    D=M
+                    //Push THAT value
+                    @SP
+                    A=M
+                    M=D
+                    
                     //increment pointer
                     @SP
                     M = M + 1

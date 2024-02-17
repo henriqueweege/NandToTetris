@@ -12,6 +12,7 @@
             Addresses.Add("that", "THAT");
             Addresses.Add("constant", "SP");
             Addresses.Add("temp", "TEMP");
+            Addresses.Add("static", "16");
         }
     }
 }

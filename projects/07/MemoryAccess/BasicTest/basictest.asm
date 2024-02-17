@@ -11,16 +11,27 @@
                     M = M + 1
 // pop local 0
 
+                    //get address
                     
                     @0
-                    D=M
+                    D=A
                     @LCL
-                    A=M+D
+                    D=M+D
+                    //store address at R13
+                    @13
                     M=D
+                    
+                    //retrieve first value
                     
                     //Decrement pointer
                     @SP
                     M = M - 1
+                    A=M
+                    D=M
+                    //put value at right address
+                    @R13
+                    A=M
+                    M=D
 // push constant 21
 
                         @21
@@ -45,28 +56,50 @@
                     M = M + 1
 // pop argument 2
 
+                    //get address
                     
                     @2
-                    D=M
+                    D=A
                     @ARG
-                    A=M+D
+                    D=M+D
+                    //store address at R13
+                    @13
                     M=D
+                    
+                    //retrieve first value
                     
                     //Decrement pointer
                     @SP
                     M = M - 1
+                    A=M
+                    D=M
+                    //put value at right address
+                    @R13
+                    A=M
+                    M=D
 // pop argument 1
 
+                    //get address
                     
                     @1
-                    D=M
+                    D=A
                     @ARG
-                    A=M+D
+                    D=M+D
+                    //store address at R13
+                    @13
                     M=D
+                    
+                    //retrieve first value
                     
                     //Decrement pointer
                     @SP
                     M = M - 1
+                    A=M
+                    D=M
+                    //put value at right address
+                    @R13
+                    A=M
+                    M=D
 // push constant 36
 
                         @36
@@ -80,16 +113,27 @@
                     M = M + 1
 // pop this 6
 
+                    //get address
                     
                     @6
-                    D=M
+                    D=A
                     @THIS
-                    A=M+D
+                    D=M+D
+                    //store address at R13
+                    @13
                     M=D
+                    
+                    //retrieve first value
                     
                     //Decrement pointer
                     @SP
                     M = M - 1
+                    A=M
+                    D=M
+                    //put value at right address
+                    @R13
+                    A=M
+                    M=D
 // push constant 42
 
                         @42
@@ -114,28 +158,50 @@
                     M = M + 1
 // pop that 5
 
+                    //get address
                     
                     @5
-                    D=M
+                    D=A
                     @THAT
-                    A=M+D
+                    D=M+D
+                    //store address at R13
+                    @13
                     M=D
+                    
+                    //retrieve first value
                     
                     //Decrement pointer
                     @SP
                     M = M - 1
+                    A=M
+                    D=M
+                    //put value at right address
+                    @R13
+                    A=M
+                    M=D
 // pop that 2
 
+                    //get address
                     
                     @2
-                    D=M
+                    D=A
                     @THAT
-                    A=M+D
+                    D=M+D
+                    //store address at R13
+                    @13
                     M=D
+                    
+                    //retrieve first value
                     
                     //Decrement pointer
                     @SP
                     M = M - 1
+                    A=M
+                    D=M
+                    //put value at right address
+                    @R13
+                    A=M
+                    M=D
 // push constant 510
 
                         @510
@@ -149,24 +215,37 @@
                     M = M + 1
 // pop temp 6
 
+                    //get address
                     
                     @6
-                    D=M
+                    D=A
                     @TEMP
-                    A=M+D
+                    D=M+D
+                    //store address at R13
+                    @13
                     M=D
+                    
+                    //retrieve first value
                     
                     //Decrement pointer
                     @SP
                     M = M - 1
+                    A=M
+                    D=M
+                    //put value at right address
+                    @R13
+                    A=M
+                    M=D
 // push local 0
 
                      
                     @0
-                    D=M
+                    D=A
+                     //Get value
                      @LCL
                      A = M + D
                      D = M
+                     //put value in stack
                      @SP
                      A = M
                      M = D
@@ -178,10 +257,12 @@
 
                      
                     @5
-                    D=M
+                    D=A
+                     //Get value
                      @THAT
                      A = M + D
                      D = M
+                     //put value in stack
                      @SP
                      A = M
                      M = D
@@ -192,8 +273,8 @@
 // add
 
                       
+                    
                     //retrieve first value
-                    @SP
                     
                     //Decrement pointer
                     @SP
@@ -217,10 +298,12 @@
 
                      
                     @1
-                    D=M
+                    D=A
+                     //Get value
                      @ARG
                      A = M + D
                      D = M
+                     //put value in stack
                      @SP
                      A = M
                      M = D
@@ -231,8 +314,8 @@
 // sub
 
                       
+                    
                     //retrieve first value
-                    @SP
                     
                     //Decrement pointer
                     @SP
@@ -255,10 +338,12 @@
 
                      
                     @6
-                    D=M
+                    D=A
+                     //Get value
                      @THIS
                      A = M + D
                      D = M
+                     //put value in stack
                      @SP
                      A = M
                      M = D
@@ -270,10 +355,12 @@
 
                      
                     @6
-                    D=M
+                    D=A
+                     //Get value
                      @THIS
                      A = M + D
                      D = M
+                     //put value in stack
                      @SP
                      A = M
                      M = D
@@ -284,8 +371,8 @@
 // add
 
                       
+                    
                     //retrieve first value
-                    @SP
                     
                     //Decrement pointer
                     @SP
@@ -308,8 +395,8 @@
 // sub
 
                       
+                    
                     //retrieve first value
-                    @SP
                     
                     //Decrement pointer
                     @SP
@@ -332,10 +419,12 @@
 
                      
                     @6
-                    D=M
+                    D=A
+                     //Get value
                      @TEMP
                      A = M + D
                      D = M
+                     //put value in stack
                      @SP
                      A = M
                      M = D
@@ -346,8 +435,8 @@
 // add
 
                       
+                    
                     //retrieve first value
-                    @SP
                     
                     //Decrement pointer
                     @SP

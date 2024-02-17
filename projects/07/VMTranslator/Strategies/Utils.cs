@@ -12,15 +12,20 @@ namespace VMTranslator.Strategies
         public static string RetrieveLastTwoStackValues()
         {
             return @$"  
-                    //retrieve first value
-                    @SP
-                    {DecrementStackPointer()}
-                    A=M
-                    D=M
+                    {RetrieveFirstValue()}
                     //retrieve second value
                     @SP
                     {DecrementStackPointer()}
                     A=M";
+        }
+
+        public static string RetrieveFirstValue()
+        {
+            return $@"
+                    //retrieve first value
+                    {DecrementStackPointer()}
+                    A=M
+                    D=M";
         }
 
         public static string CalculateDifference()
@@ -71,7 +76,7 @@ namespace VMTranslator.Strategies
         {
             return $@"
                     @{index}
-                    D=M";
+                    D=A";
         }
     }
 }
