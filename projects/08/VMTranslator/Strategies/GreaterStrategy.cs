@@ -20,8 +20,7 @@ namespace VMTranslator.Strategies
                     {Utils.ResultIsTrue()}
                     @ENDGREATERTHAN{Greaters}
                     0;JMP
-                    (ENDGREATERTHAN{Greaters})
-                    {Utils.IncrementStackPointer()} 
+                    (ENDGREATERTHAN{Greaters}) 
                    ";
 
         }

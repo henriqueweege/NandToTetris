@@ -27,7 +27,7 @@ namespace VMTranslator.Strategies
                     @ENDLESSTHAN{Lesses}
                     0;JMP
                     (ENDLESSTHAN{Lesses})
-                    {Utils.IncrementStackPointer()}";
+                    ";
 
         }
     }

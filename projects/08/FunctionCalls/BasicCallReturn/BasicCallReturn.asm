@@ -95,7 +95,7 @@
                 @END
                 0;JMP
              
-// function Main.add 
+// function Main.add 0
 
                       (Main.add)
                       
@@ -191,8 +191,12 @@
                     @0
                     D=A
                     @SP
-                    A=M
-                    M=D
+                     A = M
+                     M = D 
+                     
+                    //increment pointer
+                    @SP
+                    M = M + 1
                     @ENDLESSTHAN1
                     0;JMP
                     (LESSTHAN1)
@@ -202,15 +206,16 @@
                     D = A
                     D = D -1 
                     @SP
-                    A = M
-                    M = D
+                     A = M
+                     M = D 
+                     
+                    //increment pointer
+                    @SP
+                    M = M + 1
                     @ENDLESSTHAN1
                     0;JMP
                     (ENDLESSTHAN1)
                     
-                    //increment pointer
-                    @SP
-                    M = M + 1
 // 	if-goto N_LT_3        
 
                 
@@ -318,6 +323,17 @@
                     
 // label N_GE_3               // if n >= 2 returns fib(n - 2) + fib(n - 1)
 (N_GE_3)
+//     push constant 0
+
+                        @0
+                        D=A
+                        @SP
+                        A = M
+                        M = D
+                        
+                    //increment pointer
+                    @SP
+                    M = M + 1
 // 	return
 
                       // RETURN

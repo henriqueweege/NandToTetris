@@ -156,8 +156,12 @@
                     @0
                     D=A
                     @SP
-                    A=M
-                    M=D
+                     A = M
+                     M = D 
+                     
+                    //increment pointer
+                    @SP
+                    M = M + 1
                     @ENDLESSTHAN1
                     0;JMP
                     (LESSTHAN1)
@@ -167,15 +171,16 @@
                     D = A
                     D = D -1 
                     @SP
-                    A = M
-                    M = D
+                     A = M
+                     M = D 
+                     
+                    //increment pointer
+                    @SP
+                    M = M + 1
                     @ENDLESSTHAN1
                     0;JMP
                     (ENDLESSTHAN1)
                     
-                    //increment pointer
-                    @SP
-                    M = M + 1
 // 	if-goto N_LT_2        
 
                 
@@ -258,6 +263,15 @@
                     M = D
                     
                        
+                    //Reposition SP Address
+                    @1
+                    D=A
+                    @ARG
+                    D = M + D
+                    @SP
+                    M = D
+                    
+                       
                     //Reposition ARG Address
                     @3
                     D=A
@@ -275,15 +289,6 @@
                     A = M - D
                     D = M
                     @LCL
-                    M = D
-                    
-                       
-                    //Reposition SP Address
-                    @7
-                    D=A
-                    @ARG
-                    D = M + D
-                    @SP
                     M = D
                     
                      @R12
@@ -611,6 +616,15 @@
                     M = D
                     
                        
+                    //Reposition SP Address
+                    @1
+                    D=A
+                    @ARG
+                    D = M + D
+                    @SP
+                    M = D
+                    
+                       
                     //Reposition ARG Address
                     @3
                     D=A
@@ -628,15 +642,6 @@
                     A = M - D
                     D = M
                     @LCL
-                    M = D
-                    
-                       
-                    //Reposition SP Address
-                    @7
-                    D=A
-                    @ARG
-                    D = M + D
-                    @SP
                     M = D
                     
                      @R12

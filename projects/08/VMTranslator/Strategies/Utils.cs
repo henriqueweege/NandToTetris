@@ -128,25 +128,21 @@ namespace VMTranslator.Strategies
 
         public static string ResultIsFalse()
         {
-            return @"
+            return $@"
                     //result is false
                     @0
                     D=A
-                    @SP
-                    A=M
-                    M=D";
+                    {PushToStack()}";
         }
 
         public static string ResultIsTrue()
         {
-            return @"
+            return $@"
                     //Result is true 
                     @0
                     D = A
                     D = D -1 
-                    @SP
-                    A = M
-                    M = D";
+                    {PushToStack()}";
         }
 
         public static string IncrementStackPointer()

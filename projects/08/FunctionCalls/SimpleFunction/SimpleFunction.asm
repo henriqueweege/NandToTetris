@@ -1,9 +1,3 @@
-
-@17
-D=A
-@16
-M=D
- 
 // function SimpleFunction.test 2
 
                       (SimpleFunction.test)
@@ -199,6 +193,7 @@ M=D
                     M = M + 1
 // 	return
 
+                      // RETURN
                      
                     //retrieve first value
                     
@@ -210,15 +205,67 @@ M=D
                      @ARG
                      A = M
                      M = D
-                     @ReturnAddress
-                     D = M
-                     @SP
-                     M = D
-                     
-                    //increment pointer
+                       
+                    //Set Address To Return To R12
+                    @5
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @R12
+                    M = D
+                    
+                       
+                    //Reposition THIS Address
+                    @2
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @THIS
+                    M = D
+                                         
+                       
+                    //Reposition THAT Address
+                    @1
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @THAT
+                    M = D
+                    
+                       
+                    //Reposition SP Address
+                    @1
+                    D=A
+                    @ARG
+                    D = M + D
                     @SP
-                    M = M + 1
-                     @RETURN
+                    M = D
+                    
+                       
+                    //Reposition ARG Address
+                    @3
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @ARG
+                    M = D
+                    
+                       
+                    //Reposition ARG Address
+                    @4
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @LCL
+                    M = D
+                    
+                     @R12
+                     A = M
                      0;JMP
                     
 

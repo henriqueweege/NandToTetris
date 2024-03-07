@@ -27,7 +27,7 @@ namespace VMTranslator.Strategies
                     @ENDEQUAL{Equals}
                     0;JMP
                     (ENDEQUAL{Equals})
-                    {Utils.IncrementStackPointer()} ";
+                   ";
 
         }
     }
