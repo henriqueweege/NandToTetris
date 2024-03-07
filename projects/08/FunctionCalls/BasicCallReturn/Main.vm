@@ -1,0 +1,15 @@
+function Main.add 0
+	push argument 0
+	push constant 1
+	add
+    push constant 3
+	lt                     
+	if-goto N_LT_3        
+	goto N_GE_3
+label N_LT_3               // if n < 2 returns n
+    push constant 3
+	call Main.add 1
+label N_GE_3               // if n >= 2 returns fib(n - 2) + fib(n - 1)
+    push constant 0
+	return
+	

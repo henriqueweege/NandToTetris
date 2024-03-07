@@ -1,14 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace VMTranslator.Strategies
 {
     public static class Utils
     {
         public static string ReturnAddress = "ReturnAddress";
+        public static string CurrentReturnAddress = "";
+
+        public static int ReturnAddressCount = 0;
+
+        public static string GetReturnAddress()
+        {
+
+            var returnValue = @$"{ReturnAddress}-{--ReturnAddressCount}";
+            ++ReturnAddressCount;
+            return returnValue;
+        }
+
+        public static string RepositionTHATAddressToReturn()
+        {
+            return @$"  
+                    //Reposition THAT Address
+                    @1
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @THAT
+                    M = D
+                    ";
+        }
+
+        public static string RepositionTHISAddressToReturn()
+        {
+            return @$"  
+                    //Reposition THIS Address
+                    @2
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @THIS
+                    M = D
+                    ";
+        }
+
+        public static string RepositionARGAddressToReturn()
+        {
+            return @$"  
+                    //Reposition ARG Address
+                    @3
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @ARG
+                    M = D
+                    ";
+        }
+
+        public static string RepositionLCLAddressToReturn()
+        {
+            return @$"  
+                    //Reposition ARG Address
+                    @4
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @LCL
+                    M = D
+                    ";
+        }
+
+        public static string SetAddressToReturnToR12()
+        {
+            return @$"  
+                    //Set Address To Return To R12
+                    @5
+                    D=A
+                    @LCL
+                    A = M - D
+                    D = M
+                    @R12
+                    M = D
+                    ";
+        }
+
+        public static string RepositionSPAddressToReturn()
+        {
+            return @$"  
+                    //Reposition SP Address
+                    @1
+                    D=A
+                    @ARG
+                    D = M + D
+                    @SP
+                    M = D
+                    ";
+        }
+
         public static string PopTwoValues()
         {
             return @$"  
@@ -84,7 +175,7 @@ namespace VMTranslator.Strategies
             var qntVars = int.Parse(qntVarsStr);
             var builder = new StringBuilder();
 
-            for(var i =0; i< qntVars; i++)
+            for (var i = 0; i < qntVars; i++)
             {
                 builder.AppendLine($@"
                                       //initialize local vars
@@ -114,18 +205,37 @@ namespace VMTranslator.Strategies
                      {IncrementStackPointer()}";
         }
 
+        //public static object PushReturnAddress(string numberOfArguments)
+        //{
+        //    var argsNum = int.Parse(numberOfArguments);
+        //    CurrentReturnAddress = $"{ReturnAddress}-{++ReturnAddressCount}";
+        //    return $@"
+        //            @5
+        //            D = A
+        //            @SP
+        //            M = A
+        //            D = D - M
+        //            @R12
+        //            M = D
+        //            @{CurrentReturnAddress}
+        //            D=A
+        //            @R12
+        //            A =
+        //            {PushToStack()}
+        //            ";
+
+        //}
+
         public static object PushReturnAddress(string numberOfArguments)
         {
             var argsNum = int.Parse(numberOfArguments);
-
+            CurrentReturnAddress = $"{ReturnAddress}-{++ReturnAddressCount}";
             return $@"
-                    @{argsNum}
-                    D = A
-                    @SP
-                    D = D - M
-                    @{ReturnAddress}
-                    M = A
+                    @{CurrentReturnAddress}
+                    D=A
+                    {PushToStack()}
                     ";
+
         }
 
         internal static object SetNewARGAddress(string numberOfArguments)
@@ -136,9 +246,9 @@ namespace VMTranslator.Strategies
                     @{argsNum}
                     D = A
                     @5
-                    D = D - A
+                    D = D + A
                     @SP
-                    D = D - M
+                    D = M - D
                     @ARG
                     M = D
                     ";

@@ -8,7 +8,7 @@ namespace VMTranslator.Strategies
         {
             return @$"
                      //push return address
-                     {Utils.PushReturnAddress(numberOfArguments)}
+                     {Utils.PushReturnAddress(numberOfArguments)} 
                      //save LCL
                      @LCL
                      D = M
@@ -32,7 +32,9 @@ namespace VMTranslator.Strategies
                      D = M
                      @LCL
                      M = D
-                     (RETURN) 
+                     @{functionName}
+                     0;JMP
+                     ({Utils.CurrentReturnAddress})
                     ";
         }
     }

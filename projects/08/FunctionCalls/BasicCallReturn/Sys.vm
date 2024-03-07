@@ -1,0 +1,5 @@
+function Sys.init 0
+    push constant 1
+	call Main.add 1
+label END  
+	goto END               

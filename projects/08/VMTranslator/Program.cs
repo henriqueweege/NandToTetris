@@ -7,11 +7,9 @@ static extern IntPtr GetConsoleWindow();
 
 [DllImport("user32.dll")]
 static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-const int SW_HIDE = 0;
+    
 var handle = GetConsoleWindow();
-
-ShowWindow(handle, SW_HIDE);
+ShowWindow(handle, 0);
 
 string[] syslines = new string[0];
 string[] mainlines = new string[0];
@@ -19,14 +17,14 @@ string[] mainlines = new string[0];
 try
 {
 
-    syslines = File.ReadAllLines(@"D:\Arquitetura de Computadores I\NandToTetris\projects\08\FunctionCalls\SimpleFunction\sys.vm", Encoding.UTF8);
+    syslines = File.ReadAllLines(@"D:\Arquitetura de Computadores I\NandToTetris\projects\08\FunctionCalls\BasicCallReturn\Sys.vm", Encoding.UTF8);
 }
 catch { }
 
 try
 {
 
-    mainlines = File.ReadAllLines(@"D:\Arquitetura de Computadores I\NandToTetris\projects\08\FunctionCalls\SimpleFunction\SimpleFunction.vm", Encoding.UTF8);
+    mainlines = File.ReadAllLines(@"D:\Arquitetura de Computadores I\NandToTetris\projects\08\FunctionCalls\BasicCallReturn\Main.vm", Encoding.UTF8);
 }
 catch
 {
@@ -42,12 +40,12 @@ var selector = new Selector();
 
 var translated = new StringBuilder();
 
-translated.AppendLine(@"
-@17
-D=A
-@16
-M=D
- ");
+//translated.AppendLine(@"
+//@17
+//D=A
+//@16
+//M=D
+// ");
 
 foreach (var lines in archives)
 {
@@ -64,7 +62,7 @@ foreach (var lines in archives)
 
         translated.AppendLine($"// {line}");
 
-        var values = line.Split(' ');
+        var values = line.Trim().Split(' ');
 
         try
         {
@@ -86,6 +84,7 @@ foreach (var lines in archives)
 
         IStrategy strategy = selector._strategies[command];
         translated.AppendLine(strategy.Translate(memBucket, index));
+
 
     }
 }

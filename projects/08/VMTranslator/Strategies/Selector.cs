@@ -24,6 +24,7 @@ namespace VMTranslator.Strategies
             _strategies.Add("return", new ReturnStrategy());
             _strategies.Add("if-goto", new IfgotoStrategy());
             _strategies.Add("goto", new GotoStrategy());
+            _strategies.Add("label", new LabelStrategy());
         }
 
     }
