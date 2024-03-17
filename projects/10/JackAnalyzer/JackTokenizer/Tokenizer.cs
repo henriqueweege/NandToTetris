@@ -13,30 +13,31 @@ namespace JackAnalyzer.JackTokenizer
         {
             Tokens = new List<string>();
 
-            foreach(var row in fileRows)
+            foreach (var row in fileRows)
             {
                 var validTokens = row.Split("//")[0].Split(" ");
-                foreach(var token in validTokens)
+                foreach (var token in validTokens)
                 {
+                    if (string.IsNullOrWhiteSpace(token)) continue;
                     Tokens.Add(token);
                 }
             }
             KeyWords = GetKeyWords();
             Symbols = GetSymbols();
         }
-       
-        public TokenTypeEnum TokenType()
+
+        public TokenTypeEnum GetTokenType()
         {
             var token = Tokens[CurrIndex];
             if (KeyWords.Contains(token))
             {
                 return TokenTypeEnum.KeyWord;
             }
-            else if(Symbols.Contains(token))
+            else if (Symbols.Contains(token))
             {
-                return TokenTypeEnum.Symbol;       
+                return TokenTypeEnum.Symbol;
             }
-            else if(int.TryParse(token, out _) && int.Parse(token) <= 32767)
+            else if (int.TryParse(token, out _) && int.Parse(token) <= 32767)
             {
                 return TokenTypeEnum.IntConst;
             }
@@ -55,22 +56,23 @@ namespace JackAnalyzer.JackTokenizer
         }
 
 
-        public bool HasMoreTokens() 
+        public bool HasMoreTokens()
         {
-            return CurrIndex < Tokens.Count;
+            return CurrIndex < Tokens.Count -1;
         }
 
-        public string Advance()
+        public void Advance()
         {
             if (HasMoreTokens())
             {
                 CurrIndex++;
+                return;
             }
 
             throw new NotAbleToAdvanceException();
         }
 
-        private static IEnumerable<string> GetSymbols() 
+        private static IEnumerable<string> GetSymbols()
         {
             return new List<string>
             {
@@ -78,7 +80,7 @@ namespace JackAnalyzer.JackTokenizer
             };
         }
 
-        private static IEnumerable<string> GetKeyWords() 
+        private static IEnumerable<string> GetKeyWords()
         {
             return new List<string>
             {
