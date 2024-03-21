@@ -1,34 +1,141 @@
 ﻿using JackAnalyzer.JackTokenizer.Exceptions;
+using System.Text;
 
 namespace JackAnalyzer.JackTokenizer
 {
     internal class Tokenizer
     {
-        private IList<string> Tokens;
+        private IList<Token> Tokens = new List<Token>();
         private IEnumerable<string> KeyWords;
         private IEnumerable<string> Symbols;
         private int CurrIndex = 0;
 
         public Tokenizer(string[] fileRows)
         {
-            Tokens = new List<string>();
 
+
+
+            //TODO : 
+            // as string que são constantes não estão sendo
+            //tratadas da maneira adequada. Está sendo splitado
+            //por conta do espaço em branco, tem que pensar
+            //em: ou uma maneira de tratar string nesse caso,
+            //ou outra maneira de fazer o split da linha 34.
+
+
+            KeyWords = GetKeyWords();
+            Symbols = GetSymbols();
             foreach (var row in fileRows)
             {
                 var validTokens = row.Split("//")[0].Split(" ");
-                foreach (var token in validTokens)
+                var openPar = "(";
+                var closePar = "(";
+                var openCurlyBrac = "{";
+                var closeCurlyBrac = "}";
+                var semiColumn = ";";
+                var openBrac = "]";
+                var closeBrac = "[";
+                var comma = ",";
+                var dot = ".";
+
+
+                for (var i = 0; i < validTokens.Length; i++)
                 {
+                    var token = validTokens[i];
                     if (string.IsNullOrWhiteSpace(token)) continue;
-                    Tokens.Add(token);
+
+                    var validToken = new StringBuilder();
+                    foreach (var c in token)
+                    {
+                        if (c.ToString().Equals(openPar))
+                        {
+                            AddCurrToken(validToken);
+                            Tokens.Add(new Token(openPar, GetTokenType(openPar)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(openCurlyBrac))
+                        {
+                            AddCurrToken(validToken);
+                            Tokens.Add(new Token(openCurlyBrac, GetTokenType(openCurlyBrac)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(openBrac))
+                        {
+                            AddCurrToken(validToken);
+                            Tokens.Add(new Token(openBrac, GetTokenType(openBrac)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(closePar))
+                        {
+                            AddCurrToken(validToken);
+
+                            Tokens.Add(new Token(closePar, GetTokenType(closePar)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(closeCurlyBrac))
+                        {
+                            AddCurrToken(validToken);
+
+                            Tokens.Add(new Token(closeCurlyBrac, GetTokenType(closeCurlyBrac)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(closeBrac))
+                        {
+                            AddCurrToken(validToken);
+
+                            Tokens.Add(new Token(closeBrac, GetTokenType(closeBrac)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(semiColumn))
+                        {
+                            AddCurrToken(validToken);
+
+                            Tokens.Add(new Token(semiColumn, GetTokenType(semiColumn)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(comma))
+                        {
+                            AddCurrToken(validToken);
+
+                            Tokens.Add(new Token(comma, GetTokenType(comma)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (c.ToString().Equals(dot))
+                        {
+                            AddCurrToken(validToken);
+
+                            Tokens.Add(new Token(dot, GetTokenType(dot)));
+                            validToken = new StringBuilder();
+                            continue;
+                        }
+                        if (!string.IsNullOrWhiteSpace(c.ToString()))
+                        {
+                            validToken.Append(c);
+                        }
+                    }
+                    AddCurrToken(validToken);
                 }
             }
-            KeyWords = GetKeyWords();
-            Symbols = GetSymbols();
+
         }
 
-        public TokenTypeEnum GetTokenType()
+        private void AddCurrToken(StringBuilder validToken)
         {
-            var token = Tokens[CurrIndex];
+            if (validToken.ToString().Length == 0) return;
+            var tokenType = GetTokenType(validToken.ToString());
+            Tokens.Add(new Token(validToken.ToString(), tokenType));
+        }
+
+        private TokenTypeEnum GetTokenType(string token)
+        {
             if (KeyWords.Contains(token))
             {
                 return TokenTypeEnum.KeyWord;
@@ -47,10 +154,9 @@ namespace JackAnalyzer.JackTokenizer
             }
 
             return TokenTypeEnum.Identifier;
-
         }
 
-        public string GetToken()
+        public Token GetToken()
         {
             return Tokens[CurrIndex];
         }
@@ -58,7 +164,7 @@ namespace JackAnalyzer.JackTokenizer
 
         public bool HasMoreTokens()
         {
-            return CurrIndex < Tokens.Count -1;
+            return CurrIndex < Tokens.Count - 1;
         }
 
         public void Advance()

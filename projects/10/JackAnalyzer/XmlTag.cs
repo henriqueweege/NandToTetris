@@ -10,7 +10,7 @@
         {
             TokenType = tokenType;
             Open = $"<{tagName}>";
-            Close = $"<\\{tagName}>";
+            Close = $"</{tagName}>";
         }
 
     }
