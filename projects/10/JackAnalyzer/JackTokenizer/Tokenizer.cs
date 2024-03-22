@@ -9,11 +9,13 @@ namespace JackAnalyzer.JackTokenizer
         private IEnumerable<string> KeyWords;
         private IEnumerable<string> Symbols;
         private int CurrIndex = 0;
+            string name;
 
-        public Tokenizer(string[] fileRows)
+        public Tokenizer(string[] fileRows, string name)
         {
 
 
+                this.name = name;
 
             //TODO : 
             // as string que são constantes não estão sendo
@@ -27,7 +29,10 @@ namespace JackAnalyzer.JackTokenizer
             Symbols = GetSymbols();
             foreach (var row in fileRows)
             {
-                var validTokens = row.Split("//")[0].Split(" ");
+                if (row.StartsWith("//"))
+                {
+                    continue;
+                }
                 var openPar = "(";
                 var closePar = "(";
                 var openCurlyBrac = "{";
@@ -38,10 +43,57 @@ namespace JackAnalyzer.JackTokenizer
                 var comma = ",";
                 var dot = ".";
 
+                var treatedRow = row.Replace("(", " ( ").Replace(")", " ) ").Replace(";", " ; ").Replace(@"\", "");
 
-                for (var i = 0; i < validTokens.Length; i++)
+                for (var i = 0; i < treatedRow.Length; i++)
                 {
-                    var token = validTokens[i];
+                    var tokenBuilder = new StringBuilder();
+                    var currChar = treatedRow[i];
+                    if(currChar == ' ') 
+                    {
+                        continue;
+                    }
+                    if (treatedRow.Contains("How"))
+                    {
+
+                    }
+                    if (currChar == '"')
+                    {
+                        while (treatedRow[i+1] != '"' && i < treatedRow.Length)
+                        {
+                            tokenBuilder.Append(currChar);
+                            try
+                            {
+                                currChar = treatedRow[++i];
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                        i++;
+                        tokenBuilder.Append('"');
+
+                    }
+                    else
+                    {
+                        while (currChar != ' ' && i < treatedRow.Length && currChar != '\\')
+                        {
+                            tokenBuilder.Append(currChar);
+                            try
+                            {
+                                currChar = treatedRow[++i];
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                    }
+
+                    var token = tokenBuilder.ToString();
+
+
                     if (string.IsNullOrWhiteSpace(token)) continue;
 
                     var validToken = new StringBuilder();
