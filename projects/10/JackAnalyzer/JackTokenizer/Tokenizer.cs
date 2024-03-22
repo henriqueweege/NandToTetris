@@ -9,20 +9,11 @@ namespace JackAnalyzer.JackTokenizer
         private IEnumerable<string> KeyWords;
         private IEnumerable<string> Symbols;
         private int CurrIndex = 0;
-            string name;
 
-        public Tokenizer(string[] fileRows, string name)
+        public Tokenizer(string[] fileRows)
         {
-
-
-                this.name = name;
-
             //TODO : 
-            // as string que são constantes não estão sendo
-            //tratadas da maneira adequada. Está sendo splitado
-            //por conta do espaço em branco, tem que pensar
-            //em: ou uma maneira de tratar string nesse caso,
-            //ou outra maneira de fazer o split da linha 34.
+            // verificar como tratar o caso de chamada de função
 
 
             KeyWords = GetKeyWords();
