@@ -12,35 +12,42 @@ namespace JackAnalyzer.JackTokenizer
 
         public Tokenizer(string[] fileRows)
         {
-            //TODO : 
-            // verificar como tratar o caso de chamada de função
-
-
             KeyWords = GetKeyWords();
             Symbols = GetSymbols();
+            GetTokens(fileRows);
+        }
+
+        private void GetTokens(string[] fileRows)
+        {
             foreach (var row in fileRows)
             {
                 if (row.StartsWith("//"))
                 {
                     continue;
                 }
+
                 var openPar = "(";
-                var closePar = "(";
+                var closePar = ")";
                 var openCurlyBrac = "{";
                 var closeCurlyBrac = "}";
                 var semiColumn = ";";
-                var openBrac = "]";
-                var closeBrac = "[";
+                var openBrac = "[";
+                var closeBrac = "]";
                 var comma = ",";
                 var dot = ".";
 
-                var treatedRow = row.Replace("(", " ( ").Replace(")", " ) ").Replace(";", " ; ").Replace(@"\", "");
+                var treatedRow = row
+                                    .Replace("(", " ( ")
+                                    .Replace(")", " ) ")
+                                    .Replace(";", " ; ")
+                                    .Replace(@"\", "")
+                                    .Split("//").First();
 
                 for (var i = 0; i < treatedRow.Length; i++)
                 {
                     var tokenBuilder = new StringBuilder();
                     var currChar = treatedRow[i];
-                    if(currChar == ' ') 
+                    if (currChar == ' ')
                     {
                         continue;
                     }
@@ -50,7 +57,7 @@ namespace JackAnalyzer.JackTokenizer
                     }
                     if (currChar == '"')
                     {
-                        while (treatedRow[i+1] != '"' && i < treatedRow.Length)
+                        while (treatedRow[i + 1] != '"' && i < treatedRow.Length)
                         {
                             tokenBuilder.Append(currChar);
                             try
@@ -86,6 +93,23 @@ namespace JackAnalyzer.JackTokenizer
 
 
                     if (string.IsNullOrWhiteSpace(token)) continue;
+
+                    if (token.Contains("."))
+                    {
+                        var functionCall = token.Split(".");
+
+                        var tokenType = GetTokenType(functionCall[0]);
+                        Tokens.Add(new Token(functionCall[0], tokenType));
+
+                        tokenType = GetTokenType(".");
+                        Tokens.Add(new Token(".", tokenType));
+
+                        tokenType = GetTokenType(functionCall[1]);
+                        Tokens.Add(new Token(functionCall[1], tokenType));
+
+                        continue;
+
+                    }
 
                     var validToken = new StringBuilder();
                     foreach (var c in token)
@@ -167,7 +191,6 @@ namespace JackAnalyzer.JackTokenizer
                     AddCurrToken(validToken);
                 }
             }
-
         }
 
         private void AddCurrToken(StringBuilder validToken)
