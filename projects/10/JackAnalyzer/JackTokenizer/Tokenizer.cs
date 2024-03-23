@@ -227,6 +227,14 @@ namespace JackAnalyzer.JackTokenizer
             return Tokens[CurrIndex];
         }
 
+        public Token NextToken()
+        {
+            if (HasMoreTokens())
+            {
+                return Tokens[CurrIndex + 1];
+            }
+            throw new NotAbleToAdvanceException();
+        }
 
         public bool HasMoreTokens()
         {
