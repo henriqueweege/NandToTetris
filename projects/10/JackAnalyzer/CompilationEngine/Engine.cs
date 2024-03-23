@@ -7,7 +7,7 @@ internal class Engine
 {
 
     private Tokenizer _tokenizer;
-    private StringBuilder _xml = new StringBuilder();
+    public StringBuilder Xml = new StringBuilder();
     private string _identation = string.Empty;
     public Engine(Tokenizer tokenizer)
     {
@@ -31,26 +31,48 @@ internal class Engine
         switch (token.Value)
         {
 
-            case "class": CompileClass(); break;
-            case "static": CompileClassVarDec(); break;
-            case "field": CompileClassVarDec(); break;
-            case "constructor": CompileSubroutineDec(); break;
-            case "function": CompileSubroutineDec(); break;
-            case "method": CompileSubroutineDec(); break;
-            case "(": CompileParamList(); break;
-            //case ")": CompileCloseParentesis(); break;
+            case "class": 
+                CompileClass(); 
+                break;
+            case "static": case "field":
+                CompileClassVarDec();
+                break;
+            case "function": case "constructor": case "method": 
+                CompileSubroutineDec(); 
+                break;
+            case "(": 
+                CompileParamList(); 
+                break;
+            case ")": 
+                CompileCloseParentesis(); 
+                break;
+            case "var": 
+                CompileVarDec(); 
+                break;
+            case "let": case "if": case "do": case "return":
+                CompileStatements();
+                break;
+            default:
+                AddToken(); break;
 
 
+        }
+        if(_tokenizer.HasMoreTokens())
+        {
+            _tokenizer.Advance();
+            Eat();
         }
 
     }
     private void CompileParamList()
     {
-        var compilationTag = "paramList";
-        AddOpenTag(compilationTag);
-
-        IncrementIdentation();
         AddToken();
+        IncrementIdentation();
+        var compilationTag = "parameterList";
+        AddOpenTag(compilationTag);
+        IncrementIdentation();
+        NewLine();
+
         while (_tokenizer.NextToken().Value != ")")
         {
             _tokenizer.Advance();
@@ -58,11 +80,227 @@ internal class Engine
             NewLine();
         }
 
+        DecrementIdentation();
+        AddIdentedCloseTag(compilationTag);
+        NewLine();
+        DecrementIdentation();
+
+        if (!_tokenizer.HasMoreTokens())
+        {
+            return;
+        }
         _tokenizer.Advance();
         Eat();
+    }
+
+    private void CompileStatements()
+    {
+        var compilationTag = "statements";
+        IncrementIdentation();
+        AddOpenTag(compilationTag);
+        IncrementIdentation();
+        NewLine();
+
+        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
 
         DecrementIdentation();
-        AddCloseTag(compilationTag);
+        AddIdentedCloseTag(compilationTag);
+        NewLine();
+        DecrementIdentation();
+
+        if (!_tokenizer.HasMoreTokens())
+        {
+            return;
+        }
+        _tokenizer.Advance();
+        Eat();
+    }
+
+    private void CompileLetStatement()
+    {
+        var compilationTag = "letStatement";
+        IncrementIdentation();
+        AddOpenTag(compilationTag);
+        IncrementIdentation();
+        NewLine();
+        AddToken();
+
+        while (_tokenizer.NextToken().Value != ";")
+        {
+            _tokenizer.Advance();
+            AddToken();
+        }
+
+        _tokenizer.Advance();
+        AddToken();
+        DecrementIdentation();
+        AddIdentedCloseTag(compilationTag);
+        NewLine();
+        DecrementIdentation();
+
+        if (!_tokenizer.HasMoreTokens())
+        {
+            return;
+        }
+        _tokenizer.Advance();
+
+        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+
+    }
+
+    private void CompileWhileStatement()
+    {
+        var compilationTag = "whileStatement";
+        IncrementIdentation();
+        AddOpenTag(compilationTag);
+        IncrementIdentation();
+        NewLine();
+        AddToken();
+
+        while (_tokenizer.NextToken().Value != "}")
+        {
+            _tokenizer.Advance();
+            var token = _tokenizer.GetToken();
+            if (token.IsStatemnent())
+            {
+                OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+            }
+            else
+            {
+                AddToken();
+            }
+        }
+
+        _tokenizer.Advance();
+        AddToken();
+        DecrementIdentation();
+        AddIdentedCloseTag(compilationTag);
+        NewLine();
+        DecrementIdentation();
+
+        if(!_tokenizer.HasMoreTokens())
+        {
+            return;
+        }
+        _tokenizer.Advance();
+
+        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+
+    }
+
+    private void CompileDoStatement()
+    {
+        var compilationTag = "doStatement";
+        IncrementIdentation();
+        AddOpenTag(compilationTag);
+        IncrementIdentation();
+        NewLine();
+        AddToken();
+
+        while (_tokenizer.NextToken().Value != ";")
+        {
+            _tokenizer.Advance();
+            AddToken();
+        }
+
+        _tokenizer.Advance();
+        AddToken();
+        DecrementIdentation();
+        AddIdentedCloseTag(compilationTag);
+        NewLine();
+        DecrementIdentation();
+
+        if (!_tokenizer.HasMoreTokens())
+        {
+            return;
+        }
+        _tokenizer.Advance();
+
+        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+
+    }
+
+    private void CompileReturnStatement()
+    {
+        var compilationTag = "returnStatement";
+        IncrementIdentation();
+        AddOpenTag(compilationTag);
+        IncrementIdentation();
+        NewLine();
+        AddToken();
+
+        while (_tokenizer.NextToken().Value != ";")
+        {
+            _tokenizer.Advance();
+            AddToken();
+        }
+
+        _tokenizer.Advance();
+        AddToken();
+        DecrementIdentation();
+        AddIdentedCloseTag(compilationTag);
+        NewLine();
+        DecrementIdentation();
+
+        if (!_tokenizer.HasMoreTokens())
+        {
+            return;
+        }
+        _tokenizer.Advance();
+
+        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+
+    }
+
+    private void OrchestrateStatmentCompilation(string token)
+    {
+        
+        switch (token)
+        {
+            case "let":
+                CompileLetStatement();
+                break;
+            case "while":
+                CompileWhileStatement();
+                break;
+            case "do":
+                CompileDoStatement();
+                break;
+            case "return":
+                CompileReturnStatement();
+                break;
+            default:
+                return;
+        }
+    }
+
+    private void CompileVarDec()
+    {
+        var compilationTag = "varDec";
+        IncrementIdentation();
+        AddOpenTag(compilationTag);
+        IncrementIdentation();
+        NewLine();
+        AddToken();
+        while (_tokenizer.NextToken().Value != ";")
+        {
+            _tokenizer.Advance();
+            AddToken();
+        }
+
+        _tokenizer.Advance();
+        AddToken();
+        DecrementIdentation();
+        AddIdentedCloseTag(compilationTag);
+        NewLine();
+        DecrementIdentation();
+
+        if (!_tokenizer.HasMoreTokens())
+        {
+            return;
+        }
+        _tokenizer.Advance();
+        Eat();
     }
 
     private void CompileSubroutineDec()
@@ -83,9 +321,20 @@ internal class Engine
         Compile(compilationTag);
     }
 
+    private void CompileCloseParentesis()
+    {
+        AddToken();
+        if (_tokenizer.NextToken().Value.Equals("{"))
+        {
+            _tokenizer.Advance();
+            Compile("subroutineBody");
+        }
+    }
+
     private void Compile(string compilationTag)
     {
         AddOpenTag(compilationTag);
+        NewLine();
 
         IncrementIdentation();
 
@@ -97,13 +346,14 @@ internal class Engine
         Eat();
 
         DecrementIdentation();
+        NewLine();
         AddCloseTag(compilationTag);
     }
 
     private void AddToken()
     {
         var token = _tokenizer.GetToken();
-        Append(token.Tag.Open);
+        Append($"{_identation}{token.Tag.Open}");
         Append(token.Value);
         Append(token.Tag.Close);
         NewLine();
@@ -111,22 +361,27 @@ internal class Engine
 
     private void NewLine()
     {
-        _xml.AppendLine();
+        Xml.AppendLine();
     }
 
     private void Append(string value)
     {
-        _xml.Append($"{_identation}{value}");
+        Xml.Append($"{value}");
     }
 
     private void AddOpenTag(string token)
     {
-        _xml.Append($"{_identation}<{token}>");
+        Xml.Append($"{_identation}<{token}>");
+    }
+
+    private void AddIdentedCloseTag(string token)
+    {
+        Xml.Append($"{_identation}</{token}>");
     }
 
     private void AddCloseTag(string token)
     {
-        _xml.Append($"{_identation}</{token}>");
+        Xml.Append($"</{token}>");
     }
 
     private void DecrementIdentation()
