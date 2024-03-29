@@ -14,4 +14,13 @@ internal class Token
 
     public bool IsStatemnent()
         => new List<string>{ "let", "while", "do", "return"}.Contains(Value);
+
+    public bool IsWhileORIf()
+        => new List<string> { "while", "if"}.Contains(Value);
+
+    public bool IsTerm()
+        => TokenType.Equals(TokenTypeEnum.IntConst) || TokenType.Equals(TokenTypeEnum.StringConst);
+
+    internal bool IsOp()
+        => new List<string> { "+", "-", "*", "/", "&", "|", "<", ">", "=" }.Contains(Value);
 }

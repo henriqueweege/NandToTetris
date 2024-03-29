@@ -17,6 +17,9 @@ namespace JackAnalyzer.JackTokenizer
             GetTokens(fileRows);
         }
 
+        public bool IsFuncCall()
+            => (Tokens[CurrIndex].TokenType.Equals(TokenTypeEnum.Identifier) && NextToken().Value.Equals(".")) || (Tokens[CurrIndex].Value.Equals("(") && Tokens[CurrIndex -1 ].IsWhileORIf());
+
         private void GetTokens(string[] fileRows)
         {
             foreach (var row in fileRows)
@@ -222,6 +225,10 @@ namespace JackAnalyzer.JackTokenizer
             return TokenTypeEnum.Identifier;
         }
 
+        public bool IsVarName()
+        {
+            return CurrIndex - 2 > 0 && Tokens[CurrIndex].TokenType.Equals(TokenTypeEnum.Identifier) && Tokens[CurrIndex - 2].Value.Equals("var");
+        }
         public Token GetToken()
         {
             return Tokens[CurrIndex];

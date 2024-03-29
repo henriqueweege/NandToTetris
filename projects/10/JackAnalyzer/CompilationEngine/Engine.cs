@@ -12,12 +12,7 @@ internal class Engine
     public Engine(Tokenizer tokenizer)
     {
         _tokenizer = tokenizer;
-        //okay, o problema da implementação que temos aqui é que ela
-        //recurssivamente vai consumir o arquivo todo, e apenas
-        //no final do arquivo vai passar a fechar as tags,
-        //o que vai resultar num arquivo inválido.
-        //é necessário que seja refeitos os métodos para que 
-        //cumpram, passo a passo, a implementação proposta no livro
+        //tem que adicionar as tags de expressão depois dos "=" e "["... mas estamos quse lá!!
     }
 
     public void CreateXml()
@@ -40,12 +35,6 @@ internal class Engine
             case "function": case "constructor": case "method": 
                 CompileSubroutineDec(); 
                 break;
-            case "(": 
-                CompileParamList(); 
-                break;
-            case ")": 
-                CompileCloseParentesis(); 
-                break;
             case "var": 
                 CompileVarDec(); 
                 break;
@@ -53,7 +42,7 @@ internal class Engine
                 CompileStatements();
                 break;
             default:
-                AddToken(); break;
+                OrchestrateStatmentCompilation(token); break;
 
 
         }
@@ -69,20 +58,20 @@ internal class Engine
         AddToken();
         IncrementIdentation();
         var compilationTag = "parameterList";
-        AddOpenTag(compilationTag);
+        Xml.AddOpenTag(compilationTag, _identation);
         IncrementIdentation();
-        NewLine();
+        Xml.NewLine();
 
         while (_tokenizer.NextToken().Value != ")")
         {
             _tokenizer.Advance();
             AddToken();
-            NewLine();
+            Xml.NewLine();
         }
 
         DecrementIdentation();
-        AddIdentedCloseTag(compilationTag);
-        NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
+        Xml.NewLine();
         DecrementIdentation();
 
         if (!_tokenizer.HasMoreTokens())
@@ -97,15 +86,15 @@ internal class Engine
     {
         var compilationTag = "statements";
         IncrementIdentation();
-        AddOpenTag(compilationTag);
+        Xml.AddOpenTag(compilationTag, _identation);
         IncrementIdentation();
-        NewLine();
+        Xml.NewLine();
 
-        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+        OrchestrateStatmentCompilation(_tokenizer.GetToken());
 
         DecrementIdentation();
-        AddIdentedCloseTag(compilationTag);
-        NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
+        Xml.NewLine();
         DecrementIdentation();
 
         if (!_tokenizer.HasMoreTokens())
@@ -120,22 +109,19 @@ internal class Engine
     {
         var compilationTag = "letStatement";
         IncrementIdentation();
-        AddOpenTag(compilationTag);
+        Xml.AddOpenTag(compilationTag, _identation);
         IncrementIdentation();
-        NewLine();
+        Xml.NewLine();
         AddToken();
 
-        while (_tokenizer.NextToken().Value != ";")
+        while (!_tokenizer.NextToken().Value.Equals(";") && !_tokenizer.GetToken().Value.Equals(";"))
         {
             _tokenizer.Advance();
-            AddToken();
+            OrchestrateStatmentCompilation(_tokenizer.GetToken());
         }
-
-        _tokenizer.Advance();
-        AddToken();
         DecrementIdentation();
-        AddIdentedCloseTag(compilationTag);
-        NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
+        Xml.NewLine();
         DecrementIdentation();
 
         if (!_tokenizer.HasMoreTokens())
@@ -144,7 +130,7 @@ internal class Engine
         }
         _tokenizer.Advance();
 
-        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+        OrchestrateStatmentCompilation(_tokenizer.GetToken());
 
     }
 
@@ -152,30 +138,28 @@ internal class Engine
     {
         var compilationTag = "whileStatement";
         IncrementIdentation();
-        AddOpenTag(compilationTag);
+        Xml.AddOpenTag(compilationTag, _identation);
         IncrementIdentation();
-        NewLine();
+        Xml.NewLine();
         AddToken();
 
         while (_tokenizer.NextToken().Value != "}")
         {
             _tokenizer.Advance();
-            var token = _tokenizer.GetToken();
-            if (token.IsStatemnent())
+            OrchestrateStatmentCompilation(_tokenizer.GetToken());
+
+
+            if(!_tokenizer.HasMoreTokens())
             {
-                OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
-            }
-            else
-            {
-                AddToken();
+                return;
             }
         }
 
         _tokenizer.Advance();
         AddToken();
         DecrementIdentation();
-        AddIdentedCloseTag(compilationTag);
-        NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
+        Xml.NewLine();
         DecrementIdentation();
 
         if(!_tokenizer.HasMoreTokens())
@@ -184,7 +168,7 @@ internal class Engine
         }
         _tokenizer.Advance();
 
-        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+        OrchestrateStatmentCompilation(_tokenizer.GetToken());
 
     }
 
@@ -192,22 +176,21 @@ internal class Engine
     {
         var compilationTag = "doStatement";
         IncrementIdentation();
-        AddOpenTag(compilationTag);
+        Xml.AddOpenTag(compilationTag, _identation);
         IncrementIdentation();
-        NewLine();
+        Xml.NewLine();
         AddToken();
 
-        while (_tokenizer.NextToken().Value != ";")
+        while (!_tokenizer.GetToken().Value.Equals(";") /*_tokenizer.NextToken().Value != ";"*/)
         {
             _tokenizer.Advance();
-            AddToken();
+            OrchestrateStatmentCompilation( _tokenizer.GetToken());
         }
 
-        _tokenizer.Advance();
         AddToken();
         DecrementIdentation();
-        AddIdentedCloseTag(compilationTag);
-        NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
+        Xml.NewLine();
         DecrementIdentation();
 
         if (!_tokenizer.HasMoreTokens())
@@ -216,7 +199,7 @@ internal class Engine
         }
         _tokenizer.Advance();
 
-        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+        OrchestrateStatmentCompilation(_tokenizer.GetToken());
 
     }
 
@@ -224,22 +207,22 @@ internal class Engine
     {
         var compilationTag = "returnStatement";
         IncrementIdentation();
-        AddOpenTag(compilationTag);
+        Xml.AddOpenTag(compilationTag, _identation);
         IncrementIdentation();
-        NewLine();
+        Xml.NewLine();
         AddToken();
 
         while (_tokenizer.NextToken().Value != ";")
         {
             _tokenizer.Advance();
-            AddToken();
+            OrchestrateStatmentCompilation(_tokenizer.GetToken());
         }
 
         _tokenizer.Advance();
         AddToken();
         DecrementIdentation();
-        AddIdentedCloseTag(compilationTag);
-        NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
+        Xml.NewLine();
         DecrementIdentation();
 
         if (!_tokenizer.HasMoreTokens())
@@ -248,51 +231,47 @@ internal class Engine
         }
         _tokenizer.Advance();
 
-        OrchestrateStatmentCompilation(_tokenizer.GetToken().Value);
+        OrchestrateStatmentCompilation(_tokenizer.GetToken());
 
     }
 
-    private void OrchestrateStatmentCompilation(string token)
+    private void OrchestrateStatmentCompilation(Token token)
     {
-        
-        switch (token)
-        {
-            case "let":
-                CompileLetStatement();
-                break;
-            case "while":
-                CompileWhileStatement();
-                break;
-            case "do":
-                CompileDoStatement();
-                break;
-            case "return":
-                CompileReturnStatement();
-                break;
-            default:
-                return;
-        }
+        if((token.IsTerm() && !_tokenizer.IsVarName() && _tokenizer.NextToken().IsOp()) || _tokenizer.IsFuncCall())
+            CompileExpression();
+        else if (token.IsTerm() || _tokenizer.IsFuncCall())
+            CompileTerm();
+        else if(token.Value.Equals("let"))
+            CompileLetStatement();
+        else if(token.Value.Equals("while"))
+            CompileWhileStatement();
+        else if(token.Value.Equals("do"))
+            CompileDoStatement();
+        else if(token.Value.Equals("return"))
+            CompileReturnStatement();
+        else
+            AddToken();
     }
 
     private void CompileVarDec()
     {
         var compilationTag = "varDec";
         IncrementIdentation();
-        AddOpenTag(compilationTag);
+        Xml.AddOpenTag(compilationTag, _identation);
         IncrementIdentation();
-        NewLine();
+        Xml.NewLine();
         AddToken();
         while (_tokenizer.NextToken().Value != ";")
         {
             _tokenizer.Advance();
-            AddToken();
+            OrchestrateStatmentCompilation(_tokenizer.GetToken());
         }
 
         _tokenizer.Advance();
         AddToken();
         DecrementIdentation();
-        AddIdentedCloseTag(compilationTag);
-        NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
+        Xml.NewLine();
         DecrementIdentation();
 
         if (!_tokenizer.HasMoreTokens())
@@ -333,62 +312,182 @@ internal class Engine
 
     private void Compile(string compilationTag)
     {
-        AddOpenTag(compilationTag);
-        NewLine();
+        Xml.AddOpenTag(compilationTag, _identation);
+        Xml.NewLine();
 
         IncrementIdentation();
 
         AddToken();
 
-        NewLine();
+        Xml.NewLine();
 
         _tokenizer.Advance();
         Eat();
 
         DecrementIdentation();
-        NewLine();
-        AddCloseTag(compilationTag);
+        Xml.NewLine();
+        Xml.AddCloseTag(compilationTag, _identation);
     }
 
     private void AddToken()
     {
         var token = _tokenizer.GetToken();
-        Append($"{_identation}{token.Tag.Open}");
-        Append(token.Value);
-        Append(token.Tag.Close);
-        NewLine();
+        AddDefault(token);
     }
 
-    private void NewLine()
+    private void AddDefault(Token token)
     {
-        Xml.AppendLine();
+        Xml.Append($"{_identation}{token.Tag.Open}");
+        Xml.Append(token.Value);
+        Xml.Append(token.Tag.Close);
+        Xml.NewLine();
     }
 
-    private void Append(string value)
+    private void CompileExpression()
     {
-        Xml.Append($"{value}");
+        var token = _tokenizer.GetToken();
+
+        if (token.Value.Equals("("))
+        {
+            AddDefault(token);
+            _tokenizer.Advance();
+            token = _tokenizer.GetToken();
+        }
+            var expressionTag = "expression";
+        Xml.AddOpenTag(expressionTag, _identation);
+        IncrementIdentation();
+
+        if (_tokenizer.IsFuncCall())
+        {
+            var termTag = "term";
+
+            Xml.AddOpenTag(termTag, _identation);
+            IncrementIdentation();
+            Xml.NewLine();
+            while (!_tokenizer.NextToken().Value.Equals(";") && !_tokenizer.GetToken().Value.Equals(";"))
+            {
+                token = _tokenizer.GetToken();
+
+                if (token.Value.Equals("("))
+                {
+                    AddDefault(token);
+                    Xml.NewLine();
+                    var expressionListTag = "expressionList";
+                    Xml.AddOpenTag(expressionListTag, _identation);
+                    IncrementIdentation();
+                    Xml.NewLine();
+
+                    Xml.AddOpenTag(expressionTag, _identation);
+                    IncrementIdentation();
+                    Xml.NewLine();
+
+                    _tokenizer.Advance();
+                    token = _tokenizer.GetToken();
+
+                    while (!_tokenizer.GetToken().Value.Equals(")"))
+                    {
+                        if (token.Value.Equals(","))
+                        {
+                            DecrementIdentation();
+                            Xml.AddCloseTag(expressionTag, _identation);
+                            Xml.NewLine();
+                            Xml.AddOpenTag(expressionTag, _identation);
+                            IncrementIdentation();
+                            Xml.NewLine();
+                        }
+                        OrchestrateStatmentCompilation(_tokenizer.GetToken());
+                        _tokenizer.Advance();
+                    }
+                    if (!_tokenizer.HasMoreTokens())
+                    {
+                        break;
+                    }
+
+                    token = _tokenizer.GetToken();
+                    DecrementIdentation();
+                    Xml.AddCloseTag(expressionTag, _identation);
+                    Xml.NewLine();
+                    DecrementIdentation();
+                    Xml.AddCloseTag(expressionListTag, _identation);
+                    Xml.NewLine();
+                    AddDefault(token);
+                }
+                else if (token.IsTerm())
+                {
+                    CompileTerm();
+                }
+                else
+                {
+                    AddDefault(token);
+                }
+
+                
+                _tokenizer.Advance();
+                
+            }
+            DecrementIdentation();
+            Xml.AddCloseTag(termTag, _identation);
+            Xml.NewLine();
+        }
+        else
+        {
+            Xml.NewLine();
+            while (!token.Value.Equals(")"))
+            {
+                if(token.TokenType.Equals(TokenTypeEnum.Symbol)) 
+                {
+                    OrchestrateStatmentCompilation(token);
+                }
+                else
+                {
+                    var termTag = "term";
+                    Xml.AddOpenTag(termTag, _identation);
+                    Xml.NewLine();
+                    IncrementIdentation();
+                    OrchestrateStatmentCompilation(token);
+                    DecrementIdentation();
+                    Xml.NewLine();
+                    Xml.AddCloseTag(termTag, _identation);
+                    Xml.NewLine();
+                }
+                _tokenizer.Advance();
+                token = _tokenizer.GetToken();
+            }
+        }
+        
+        Xml.NewLine();
+        DecrementIdentation();
+        Xml.AddCloseTag(expressionTag, _identation);
+        Xml.NewLine();
+        OrchestrateStatmentCompilation(_tokenizer.GetToken());
+        //if(_tokenizer.HasMoreTokens())
+        //{
+        //    _tokenizer.Advance();
+        //    Eat();
+        //}
+
     }
 
-    private void AddOpenTag(string token)
+    private void CompileTerm()
     {
-        Xml.Append($"{_identation}<{token}>");
+        var termTag = "term";
+
+        var token = _tokenizer.GetToken();
+        Xml.NewLine();
+        Xml.AddOpenTag(termTag, _identation);
+        IncrementIdentation();
+        Xml.NewLine();
+        AddDefault(token);
+        DecrementIdentation();
+        Xml.AddCloseTag(termTag, _identation);
+        Xml.NewLine();
     }
 
-    private void AddIdentedCloseTag(string token)
-    {
-        Xml.Append($"{_identation}</{token}>");
-    }
-
-    private void AddCloseTag(string token)
-    {
-        Xml.Append($"</{token}>");
-    }
-
-    private void DecrementIdentation()
+    private  void DecrementIdentation()
     {
         _identation = _identation.Substring(0, _identation.Length - 2);
     }
-    private void IncrementIdentation()
+    private  void IncrementIdentation()
     {
         _identation += "  ";
     }

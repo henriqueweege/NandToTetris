@@ -28,8 +28,6 @@
                     return "integerConstant";
                 case TokenTypeEnum.StringConst:
                     return "stringConstant";
-                case TokenTypeEnum.ParamList:
-                    return "parameterList";
                 default:
                     return string.Empty;
             }
