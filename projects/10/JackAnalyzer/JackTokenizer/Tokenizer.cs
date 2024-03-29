@@ -275,5 +275,7 @@ namespace JackAnalyzer.JackTokenizer
             };
         }
 
+        internal Token LastToken()
+            => Tokens[CurrIndex - 1];
     }
 }

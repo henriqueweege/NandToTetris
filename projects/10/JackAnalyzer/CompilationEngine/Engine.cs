@@ -12,7 +12,7 @@ internal class Engine
     public Engine(Tokenizer tokenizer)
     {
         _tokenizer = tokenizer;
-        //tem que adicionar as tags de expressão depois dos "=" e "["... mas estamos quse lá!!
+        //tem alguma coisa estranha acontecendo quando chamamos CompileExpression envolvendo a palavra "do"
     }
 
     public void CreateXml()
@@ -181,7 +181,7 @@ internal class Engine
         Xml.NewLine();
         AddToken();
 
-        while (!_tokenizer.GetToken().Value.Equals(";") /*_tokenizer.NextToken().Value != ";"*/)
+        while (!_tokenizer.GetToken().Value.Equals(";"))
         {
             _tokenizer.Advance();
             OrchestrateStatmentCompilation( _tokenizer.GetToken());
@@ -237,7 +237,7 @@ internal class Engine
 
     private void OrchestrateStatmentCompilation(Token token)
     {
-        if((token.IsTerm() && !_tokenizer.IsVarName() && _tokenizer.NextToken().IsOp()) || _tokenizer.IsFuncCall())
+        if((token.IsTerm() && !_tokenizer.IsVarName() && _tokenizer.NextToken().IsOp()) || _tokenizer.IsFuncCall() || _tokenizer.GetToken().Value.Equals("=") || _tokenizer.GetToken().Value.Equals("["))
             CompileExpression();
         else if (token.IsTerm() || _tokenizer.IsFuncCall())
             CompileTerm();
@@ -346,7 +346,12 @@ internal class Engine
     private void CompileExpression()
     {
         var token = _tokenizer.GetToken();
-
+        if(token.Value == "=")
+        {
+            AddDefault(token);
+            _tokenizer.Advance();
+            token = _tokenizer.GetToken();
+        }
         if (token.Value.Equals("("))
         {
             AddDefault(token);
@@ -357,9 +362,9 @@ internal class Engine
         Xml.AddOpenTag(expressionTag, _identation);
         IncrementIdentation();
 
+        var termTag = "term";
         if (_tokenizer.IsFuncCall())
         {
-            var termTag = "term";
 
             Xml.AddOpenTag(termTag, _identation);
             IncrementIdentation();
@@ -368,7 +373,7 @@ internal class Engine
             {
                 token = _tokenizer.GetToken();
 
-                if (token.Value.Equals("("))
+                if (token.Value.Equals("(") || token.Value.Equals("["))
                 {
                     AddDefault(token);
                     Xml.NewLine();
@@ -384,7 +389,7 @@ internal class Engine
                     _tokenizer.Advance();
                     token = _tokenizer.GetToken();
 
-                    while (!_tokenizer.GetToken().Value.Equals(")"))
+                    while (!_tokenizer.GetToken().Value.Equals(")") && !_tokenizer.GetToken().Value.Equals("]"))
                     {
                         if (token.Value.Equals(","))
                         {
@@ -429,26 +434,74 @@ internal class Engine
             Xml.AddCloseTag(termTag, _identation);
             Xml.NewLine();
         }
-        else
+        else if (token.Value.Equals("["))
         {
+            AddDefault(token);
             Xml.NewLine();
-            while (!token.Value.Equals(")"))
+            var expressionListTag = "expressionList";
+            Xml.AddOpenTag(expressionListTag, _identation);
+            IncrementIdentation();
+            Xml.NewLine();
+
+            Xml.AddOpenTag(expressionTag, _identation);
+            IncrementIdentation();
+            Xml.NewLine();
+
+            _tokenizer.Advance();
+            token = _tokenizer.GetToken();
+
+            while (!_tokenizer.GetToken().Value.Equals("]"))
             {
-                if(token.TokenType.Equals(TokenTypeEnum.Symbol)) 
+                if (token.Value.Equals(","))
                 {
+                    DecrementIdentation();
+                    Xml.AddCloseTag(expressionTag, _identation);
+                    Xml.NewLine();
+                    Xml.AddOpenTag(expressionTag, _identation);
+                    IncrementIdentation();
+                    Xml.NewLine();
+                }
+
+                if(token.IsOp() || token.IsTerm() || token.TokenType.Equals(TokenTypeEnum.Symbol))
+                {
+
                     OrchestrateStatmentCompilation(token);
                 }
                 else
                 {
-                    var termTag = "term";
-                    Xml.AddOpenTag(termTag, _identation);
-                    Xml.NewLine();
-                    IncrementIdentation();
+                    CompileTerm();
+                }
+
+                _tokenizer.Advance();
+                token = _tokenizer.GetToken();
+            }
+
+            token = _tokenizer.GetToken();
+            DecrementIdentation();
+            Xml.AddCloseTag(expressionTag, _identation);
+            Xml.NewLine();
+            DecrementIdentation();
+            Xml.AddCloseTag(expressionListTag, _identation);
+            Xml.NewLine();
+            AddDefault(token);
+            _tokenizer.Advance();
+        }
+        else
+        {
+            Xml.NewLine();
+            while (!token.Value.Equals(")") && !token.Value.Equals(";"))
+            {
+                if (token.TokenType.Equals(TokenTypeEnum.Symbol) || token.TokenType.Equals(TokenTypeEnum.IntConst)) 
+                {
                     OrchestrateStatmentCompilation(token);
-                    DecrementIdentation();
-                    Xml.NewLine();
-                    Xml.AddCloseTag(termTag, _identation);
-                    Xml.NewLine();
+                }
+                else if (token.TokenType.Equals(TokenTypeEnum.KeyWord))
+                {
+                    AddDefault(token);
+                }
+                else
+                {
+                    CompileTerm();
                 }
                 _tokenizer.Advance();
                 token = _tokenizer.GetToken();
@@ -460,11 +513,7 @@ internal class Engine
         Xml.AddCloseTag(expressionTag, _identation);
         Xml.NewLine();
         OrchestrateStatmentCompilation(_tokenizer.GetToken());
-        //if(_tokenizer.HasMoreTokens())
-        //{
-        //    _tokenizer.Advance();
-        //    Eat();
-        //}
+
 
     }
 
