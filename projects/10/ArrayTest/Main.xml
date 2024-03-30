@@ -189,14 +189,14 @@
           <statements>
             <letStatement>
               <keyword> let </keyword>
-              <identifier> sum </identifier>
-              <symbol> = </symbol>
-              <expression>
-                <term>
-                  <identifier> sum </identifier>
-                </term>
-                <symbol> + </symbol>
-                <term>
+                <identifier> sum </identifier>
+                <symbol> = </symbol>
+                <expression>
+                    <term>
+                    <identifier> sum </identifier>
+                    </term>
+                    <symbol> + </symbol>
+                    <term>
                   <identifier> a </identifier>
                   <symbol> [ </symbol>
                   <expression>

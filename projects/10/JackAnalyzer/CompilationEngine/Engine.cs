@@ -237,7 +237,14 @@ internal class Engine
 
     private void OrchestrateStatmentCompilation(Token token)
     {
-        if((token.IsTerm() && !_tokenizer.IsVarName() && _tokenizer.NextToken().IsOp()) || _tokenizer.IsFuncCall() || _tokenizer.GetToken().Value.Equals("=") || _tokenizer.GetToken().Value.Equals("["))
+        if(token.Value.Equals("(") && _tokenizer.IsFuncDec())
+            CompileParamList();
+        else if(
+                (token.IsTerm() && !_tokenizer.IsVarName() && _tokenizer.NextToken().IsOp()) || 
+                _tokenizer.IsFuncCall() || 
+                _tokenizer.GetToken().Value.Equals("=") || 
+                _tokenizer.GetToken().Value.Equals("[")
+                )
             CompileExpression();
         else if (token.IsTerm() || _tokenizer.IsFuncCall())
             CompileTerm();
@@ -300,16 +307,6 @@ internal class Engine
         Compile(compilationTag);
     }
 
-    private void CompileCloseParentesis()
-    {
-        AddToken();
-        if (_tokenizer.NextToken().Value.Equals("{"))
-        {
-            _tokenizer.Advance();
-            Compile("subroutineBody");
-        }
-    }
-
     private void Compile(string compilationTag)
     {
         Xml.AddOpenTag(compilationTag, _identation);
@@ -345,6 +342,10 @@ internal class Engine
 
     private void CompileExpression()
     {
+        var expressionTag = "expression";
+        var expressionListTag = "expressionList";
+        var termTag = "term";
+
         var token = _tokenizer.GetToken();
         if(token.Value == "=")
         {
@@ -358,13 +359,11 @@ internal class Engine
             _tokenizer.Advance();
             token = _tokenizer.GetToken();
         }
-            var expressionTag = "expression";
-        Xml.AddOpenTag(expressionTag, _identation);
-        IncrementIdentation();
 
-        var termTag = "term";
         if (_tokenizer.IsFuncCall())
         {
+            Xml.AddOpenTag(expressionTag, _identation);
+            IncrementIdentation();
 
             Xml.AddOpenTag(termTag, _identation);
             IncrementIdentation();
@@ -377,7 +376,6 @@ internal class Engine
                 {
                     AddDefault(token);
                     Xml.NewLine();
-                    var expressionListTag = "expressionList";
                     Xml.AddOpenTag(expressionListTag, _identation);
                     IncrementIdentation();
                     Xml.NewLine();
@@ -436,14 +434,16 @@ internal class Engine
         }
         else if (token.Value.Equals("["))
         {
+            var expressionTags = 0;
+
             AddDefault(token);
             Xml.NewLine();
-            var expressionListTag = "expressionList";
             Xml.AddOpenTag(expressionListTag, _identation);
             IncrementIdentation();
             Xml.NewLine();
 
             Xml.AddOpenTag(expressionTag, _identation);
+            expressionTags++;
             IncrementIdentation();
             Xml.NewLine();
 
@@ -457,9 +457,8 @@ internal class Engine
                     DecrementIdentation();
                     Xml.AddCloseTag(expressionTag, _identation);
                     Xml.NewLine();
-                    Xml.AddOpenTag(expressionTag, _identation);
                     IncrementIdentation();
-                    Xml.NewLine();
+                    expressionTags++;
                 }
 
                 if(token.IsOp() || token.IsTerm() || token.TokenType.Equals(TokenTypeEnum.Symbol))
@@ -477,10 +476,12 @@ internal class Engine
             }
 
             token = _tokenizer.GetToken();
-            DecrementIdentation();
-            Xml.AddCloseTag(expressionTag, _identation);
-            Xml.NewLine();
-            DecrementIdentation();
+            for(int i = 0; i < expressionTags; i++)
+            {
+                DecrementIdentation();
+                Xml.AddCloseTag(expressionTag, _identation);
+                Xml.NewLine();
+            }
             Xml.AddCloseTag(expressionListTag, _identation);
             Xml.NewLine();
             AddDefault(token);
@@ -488,6 +489,8 @@ internal class Engine
         }
         else
         {
+            Xml.AddOpenTag(expressionTag, _identation);
+            IncrementIdentation();
             Xml.NewLine();
             while (!token.Value.Equals(")") && !token.Value.Equals(";"))
             {

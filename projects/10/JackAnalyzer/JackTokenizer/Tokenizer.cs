@@ -277,5 +277,11 @@ namespace JackAnalyzer.JackTokenizer
 
         internal Token LastToken()
             => Tokens[CurrIndex - 1];
+
+        internal bool IsFuncDec()
+        {
+            var x = Tokens[CurrIndex - 3];
+            return CurrIndex - 3 > 0 && Tokens[CurrIndex -3].Value.Equals("function");
+        }
     }
 }
