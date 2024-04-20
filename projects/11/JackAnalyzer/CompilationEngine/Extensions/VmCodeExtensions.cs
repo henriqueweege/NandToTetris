@@ -1,0 +1,57 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace JackAnalyzer.CompilationEngine.Extensions
+{
+    public static class VmCodeExtensions
+    {
+        public static void Push(this StringBuilder stringBuilder,string value, string memSegment = " ")
+        {
+            if(int.TryParse(value, out _))
+            {
+                stringBuilder.AppendLine($"push constant {value}");
+            }
+        }
+
+        public static void PushOp (this StringBuilder stringBuilder, string value)
+        {
+            switch(value)
+            {
+                case "*":
+                    stringBuilder.Call("Math.multiply", 2);
+                    break;
+                case "+":
+                    stringBuilder.AppendLine($"add");
+                    break;
+                case "-":
+                    stringBuilder.AppendLine($"sub");
+                    break;
+                default:
+                    break;
+
+            }
+        }
+        public static void Call(this StringBuilder stringBuilder, string funcName, int qntParams)
+        {
+            stringBuilder.AppendLine($"call {funcName} {qntParams}");
+        }
+
+        public static void Pop(this StringBuilder stringBuilder, string value, string memSegment = " ")
+        {
+            stringBuilder.AppendLine($"pop {memSegment} {value}");
+        }
+
+        public static void Function(this StringBuilder stringBuilder, string className, string funcName, int qntParams = 0)
+        {
+            stringBuilder.AppendLine($"function {className}.{funcName} {qntParams}");
+        }
+
+        public static void Call(this StringBuilder stringBuilder, string funcName)
+        {
+            stringBuilder.AppendLine($"call {funcName}");
+        }
+    }
+}
