@@ -15,6 +15,7 @@ internal class Engine
     private Dictionary<string, Variable> ClassSymbolTable = new Dictionary<string, Variable>();
     private Dictionary<string, Variable> FuncSymbolTable = new Dictionary<string, Variable>();
     private string ClassName = default!;
+    private int LabelsCount = 0;
     public Engine(Tokenizer tokenizer)
     {
         _tokenizer = tokenizer;
@@ -153,10 +154,10 @@ internal class Engine
     //    while (_tokenizer.NextToken().Value != "}")
     //    {
     //        _tokenizer.Advance();
-    //        OrchestrateStatmentCompilation(_tokenizer.GetToken());
+    //        //OrchestrateStatmentCompilation(_tokenizer.GetToken());
 
 
-    //        if(!_tokenizer.HasMoreTokens())
+    //        if (!_tokenizer.HasMoreTokens())
     //        {
     //            return;
     //        }
@@ -169,13 +170,13 @@ internal class Engine
     //    Xml.NewLine();
     //    DecrementIdentation();
 
-    //    if(!_tokenizer.HasMoreTokens())
+    //    if (!_tokenizer.HasMoreTokens())
     //    {
     //        return;
     //    }
     //    _tokenizer.Advance();
 
-    //    OrchestrateStatmentCompilation(_tokenizer.GetToken());
+    //    //OrchestrateStatmentCompilation(_tokenizer.GetToken());
 
     //}
 
@@ -325,7 +326,7 @@ internal class Engine
             {
                 VmCode.Function(ClassName, funcName);
                 _tokenizer.Advance();
-                CompileFunction();
+                CompileSubroutine();
             }
 
             CompileVoidReturn();
@@ -336,22 +337,42 @@ internal class Engine
 
     private void CompileVoidReturn()
     {
-        VmCode.Pop("0", nameof(EMemSegments.Temp).ToLower());
-        VmCode.Push("0", nameof(EMemSegments.Constant).ToLower());
+        VmCode.Pop(EMemSegments.Temp, 0);
+        VmCode.Push(EMemSegments.Constant, 0);
         VmCode.AppendLine("return");
     }
 
-    private void CompileFunction()
+    private void CompileSubroutine()
     {
+        while(_tokenizer.GetToken().Value != "{")
+        {
+            _tokenizer.Advance();
+        }
         _tokenizer.Advance();
-        _tokenizer.Advance();
+
         var tokenValue = GetCurrTokenValue();
-        while(tokenValue != "}")
+        var stack = 1;
+        while(stack > 0)
         {
             switch (tokenValue)
             {
                 case "do":
                     CompileDoCall();
+                    break;
+                case "var":
+                    CompileVar();
+                    break;
+                case "let":
+                    CompileLet();
+                    break;
+                case "while":
+                    CompileWhile();
+                    break;
+                case "{":
+                    stack++;
+                    break;
+                case "}":
+                    stack--;
                     break;
                 default:
                     break;
@@ -367,18 +388,119 @@ internal class Engine
         }
     }
 
+    private void CompileWhile()
+    {
+        VmCode.AppendLine($"label label{LabelsCount}");
+        _tokenizer.Advance();
+        var qntOfParams = 0;
+        CompileExpression(ref qntOfParams);
+        VmCode.AppendLine($"if-goto label{LabelsCount + 1}");
+        //compila corpo do while. 
+        //precisamos implementar duas lógicas, uma para lidar com let a[i] =, 
+        //onde fazemos a atribuição de um resultado a uma possição do array,
+        //e outra lógica para sum + a[i], onde recuperamos um valor de uma posição
+        //do array e somamos com uma variável.
+        
+        
+        VmCode.AppendLine($"goto label{LabelsCount}"); //volta para a verificação do loop
+        
+        VmCode.AppendLine($"label label{++LabelsCount}");// a verificação do loop quebrando, segue o fluxo
+        var x = VmCode.ToString();
+    }
+
+    private void CompileLet()
+    {
+        var token = GetNextToken();
+        var variableInfo = GetVariableInfo(token);
+
+        _tokenizer.Advance();
+        token = GetNextToken();
+        if (token.Value.Equals("Keyboard") || token.Value.Equals("Array"))
+        {
+            var funcToCall = new StringBuilder();
+            while(token.Value != "(")
+            {
+                funcToCall.Append(token.Value);
+                token = GetNextToken();
+            }
+            var quantOfParameters = 1;
+            CompileExpression(ref quantOfParameters);
+
+            VmCode.Call(funcToCall.ToString(), quantOfParameters);
+        }
+        else if (token.TokenType.Equals(TokenTypeEnum.IntConst) && !_tokenizer.NextToken().IsOp())
+        {
+            VmCode.Push(EMemSegments.Constant, token.Value);
+        }
+        else if (token.TokenType.Equals(TokenTypeEnum.IntConst) && _tokenizer.NextToken().IsOp())
+        {
+            var quantOfParameters = 1;
+            CompileExpression(ref quantOfParameters);
+        }
+
+        VmCode.Pop(variableInfo.Kind, variableInfo.Position);
+    }
+
+    private Variable GetVariableInfo(Token token)
+    {
+        var variableInfo = FuncSymbolTable.FirstOrDefault(x => x.Key.Equals(token.Value)).Value;
+        if (variableInfo is null)
+        {
+            variableInfo = ClassSymbolTable.FirstOrDefault(x => x.Key.Equals(token.Value)).Value;
+        }
+        return variableInfo;
+    }
+
+    private void CompileVar()
+    {
+        var token = GetNextToken();
+        if (!token.TokenType.Equals(TokenTypeEnum.Identifier))
+        {
+            token = GetNextToken();
+        }
+
+        var variableType = GetVariableType(token);
+        var position = GetPosition();
+
+        FuncSymbolTable.Add(token.Value, new Variable(variableType, EMemSegments.Local, position));
+
+        token = GetNextToken();
+        if (token.Value.Equals(","))
+        {
+            CompileVar();
+        }
+        return; 
+    }
+
+    private int GetPosition()
+    {
+        return FuncSymbolTable.LastOrDefault(x => x.Value.Kind.Equals(EMemSegments.Local)).Value is null ? 0 : FuncSymbolTable.LastOrDefault(x => x.Value.Kind.Equals(EMemSegments.Local)).Value.Position + 1;
+    }
+
+    private EVariableType GetVariableType(Token token)
+    {
+        EVariableType toReturn = default!;
+        switch (token.TokenType)
+        {
+            case TokenTypeEnum.IntConst:
+                toReturn = EVariableType.Int;
+                break;
+            default:
+                break;
+        }
+        return toReturn;
+    }
+
     private void CompileDoCall()
     {
-        _tokenizer.Advance();
-        var currTokenVal = GetCurrTokenValue();
+        var currTokenVal = GetNextToken().Value;
         var funcName = new StringBuilder();
         var qntOfParams = 1;
 
         while (currTokenVal != "(")
         {
             funcName.Append(currTokenVal);
-            _tokenizer.Advance();
-            currTokenVal = GetCurrTokenValue();
+            currTokenVal = GetNextToken().Value;
         }
 
         CompileExpression(ref qntOfParams);
@@ -397,26 +519,68 @@ internal class Engine
             {
                 quantOfParams++;
             }
-            else if(currToken.Value == ")")
+            else if(currToken.Value == ")" || currToken.Value == "]")
             {
                 return false;
             }
-            else if(currToken.Value == "(")
+            else if(currToken.Value == "(" || currToken.Value == "[")
             {
                 notToBreak = CompileExpression(ref quantOfParams);
             }
+            else if(currToken.TokenType.Equals(TokenTypeEnum.StringConst))
+            {
+                CompileStringConstant();
+            }
+            else if (currToken.TokenType.Equals(TokenTypeEnum.Identifier))
+            {
+                CompileIdentifier();
+            }
             else if (currToken.IsNumber())
             {
-                VmCode.Push(currToken.Value);
+                VmCode.Push(EMemSegments.Constant, currToken.Value);
             }
             else if (currToken.IsOp())
             {
                 notToBreak = CompileExpression(ref quantOfParams);
                 VmCode.PushOp(currToken.Value);
             }
+
             currToken = GetNextToken();
         }
         return false;
+    }
+
+    private bool FuncSymbolTableContains(string varName)
+    {
+        return FuncSymbolTable[varName] is not null;
+    }
+
+    private bool ClassSymbolTableContains(string varName)
+    {
+        return ClassSymbolTable[varName] is not null;
+    }
+
+    private void CompileIdentifier()
+    {
+        var variableInfo = GetVariableInfo(_tokenizer.GetToken());
+        VmCode.Push(variableInfo.Kind, variableInfo.Position);
+    }
+
+    private void CompileStringConstant()
+    {
+        var token = _tokenizer.GetToken();
+        VmCode.Push(EMemSegments.Constant, token.Value.Length);
+
+        VmCode.Call("String.new", 1);
+        foreach( var v in token.Value)
+        {
+            if(v == 34)
+            {
+                continue;
+            }
+            VmCode.Push(EMemSegments.Constant, (int)v);
+            VmCode.Call("String.appendChar ", 2);
+        }
     }
 
     private Token GetNextToken()
@@ -690,20 +854,20 @@ internal class Engine
 
     //}
 
-    private void CompileTerm()
-    {
-        var termTag = "term";
+    //private void CompileTerm()
+    //{
+    //    var termTag = "term";
 
-        var token = _tokenizer.GetToken();
-        Xml.NewLine();
-        Xml.AddOpenTag(termTag, _identation);
-        IncrementIdentation();
-        Xml.NewLine();
-        AddDefault(token);
-        DecrementIdentation();
-        Xml.AddCloseTag(termTag, _identation);
-        Xml.NewLine();
-    }
+    //    var token = _tokenizer.GetToken();
+    //    Xml.NewLine();
+    //    Xml.AddOpenTag(termTag, _identation);
+    //    IncrementIdentation();
+    //    Xml.NewLine();
+    //    //AddDefault(token);
+    //    DecrementIdentation();
+    //    Xml.AddCloseTag(termTag, _identation);
+    //    Xml.NewLine();
+    //}
 
     private  void DecrementIdentation()
     {

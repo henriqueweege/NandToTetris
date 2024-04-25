@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace JackAnalyzer.Variables
 {
-    internal enum EMemSegments
+    public enum EMemSegments
     {
+        [Description("static")]
         Static,
+        [Description("field")]
         Field,
+        [Description("local")]
         Local,
+        [Description("argument")]
         Argument,
+        [Description("temp")]
         Temp,
+        [Description("constant")]
         Constant
     }
 }

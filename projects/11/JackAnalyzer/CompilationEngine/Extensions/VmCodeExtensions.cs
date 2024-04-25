@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JackAnalyzer.Variables;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,14 @@ namespace JackAnalyzer.CompilationEngine.Extensions
 {
     public static class VmCodeExtensions
     {
-        public static void Push(this StringBuilder stringBuilder,string value, string memSegment = " ")
+        public static void Push(this StringBuilder stringBuilder, EMemSegments memSegment, string position)
         {
-            if(int.TryParse(value, out _))
-            {
-                stringBuilder.AppendLine($"push constant {value}");
-            }
+            stringBuilder.AppendLine($"push {memSegment.ToString().ToLower()} {position}");
+        }
+
+        public static void Push(this StringBuilder stringBuilder, EMemSegments memSegment, int position)
+        {
+            stringBuilder.AppendLine($"push {memSegment.ToString().ToLower()} {position}");
         }
 
         public static void PushOp (this StringBuilder stringBuilder, string value)
@@ -29,6 +32,9 @@ namespace JackAnalyzer.CompilationEngine.Extensions
                 case "-":
                     stringBuilder.AppendLine($"sub");
                     break;
+                case "<":
+                    stringBuilder.AppendLine($"lt");
+                    break;
                 default:
                     break;
 
@@ -39,11 +45,14 @@ namespace JackAnalyzer.CompilationEngine.Extensions
             stringBuilder.AppendLine($"call {funcName} {qntParams}");
         }
 
-        public static void Pop(this StringBuilder stringBuilder, string value, string memSegment = " ")
+        public static void Pop(this StringBuilder stringBuilder, EMemSegments memSegment, string position)
         {
-            stringBuilder.AppendLine($"pop {memSegment} {value}");
+            stringBuilder.AppendLine($"pop {memSegment.ToString().ToLower()} {position}");
         }
-
+        public static void Pop(this StringBuilder stringBuilder, EMemSegments memSegment, int position)
+        {
+            stringBuilder.AppendLine($"pop {memSegment.ToString().ToLower()} {position}");
+        }
         public static void Function(this StringBuilder stringBuilder, string className, string funcName, int qntParams = 0)
         {
             stringBuilder.AppendLine($"function {className}.{funcName} {qntParams}");
