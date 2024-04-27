@@ -15,6 +15,10 @@ namespace JackAnalyzer.Variables
         [Description("temp")]
         Temp,
         [Description("constant")]
-        Constant
+        Constant,
+        [Description("pointer")]
+        Pointer,
+        [Description("that")]
+        That
     }
 }

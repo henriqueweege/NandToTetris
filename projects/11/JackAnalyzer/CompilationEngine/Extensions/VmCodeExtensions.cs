@@ -35,6 +35,9 @@ namespace JackAnalyzer.CompilationEngine.Extensions
                 case "<":
                     stringBuilder.AppendLine($"lt");
                     break;
+                case "/":
+                    stringBuilder.Call("Math.divide 2");
+                    break;
                 default:
                     break;
 
