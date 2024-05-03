@@ -41,7 +41,20 @@ class Math {
      *  in an expression, it handles it by invoking this method. 
      *  Thus, in Jack, x * y and Math.multiply(x,y) return the same value.
      */
-    function int multiply(int x, int y) {
+    function int multiply(int x, int y) 
+	{
+		var int result, count;
+		
+		let result = 0;
+		let count = 0 ;
+		
+		while(count <y)
+		{
+			let result = result + x;
+			let count = count + 1;
+		}
+		
+		return result;
     }
 
     /** Returns the integer part of x / y.
@@ -51,12 +64,14 @@ class Math {
      */
     function int divide(int x, int y) 
 	{
-		if(y > x)
+		var int q;
+		if(y>x)
 		{
 			return 0;
 		}
-		var int q;
+		
 		let q = Math.divide(x, 2*y);
+		
 		if((x-2*q*y)<y)
 		{
 			return 2 * q;
@@ -74,16 +89,37 @@ class Math {
 
     /** Returns the greater value.
     */
-    function int max(int a, int b) {
+    function int max(int a, int b) 
+	{
+		if(a>b)
+		{
+			return a;
+		}
+		
+		return b;
     }
 
     /** Returns the smaller value.
     */
-    function int min(int a, int b) {
+    function int min(int a, int b) 
+	{
+		if(a<b)
+		{
+			return a;
+		}
+		
+		return b;
     }
 
     /** Returns the absolute value of x
     */
-    function int abs(int x) {
+    function int abs(int x) 
+	{
+		if(x<0)
+		{
+			let x = -x;
+		}
+		
+		return x;
     }
 }
